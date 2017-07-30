@@ -1,0 +1,63 @@
+version: "3"
+services:
+
+db:
+  image: postgres:9.6
+  ports:
+    - 5432:5432
+  volumes:
+    - db-data:/var/lib/postgresql/data
+  networks:
+    - backend
+  environment:
+      - POSTGRES_USER:'test_user'
+      - POSTGRES_PASSWORD:'test_pass'
+      - POSTGRES_DB:'Django'
+  healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+influxdb:
+  image: influxdb:1.3.1-alpine
+  ports:
+    - 8086:8086
+  volumes:
+    - db-data:/var/lib/influxdb
+  networks:
+    - backend
+  healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+web_view:
+  build: .
+  command: python3 manage.py runserver 0.0.0.0:80
+  ports:
+    - 80:80
+    - 443:443
+  volumes:
+    - .:/code
+  networks:
+    - backend
+    - frontend
+  stop_grace_period: 1m30s
+  depends_on:
+    - db:
+        condition: service_healthy
+    - influxdb:
+        condition: service_healthy
+  deploy:
+    update_config:
+      delay: 1m30s
+    restart_policy:
+      condition: on-failure
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  db-data:
