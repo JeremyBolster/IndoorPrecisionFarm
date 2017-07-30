@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'greenhouse.apps.GreenhouseConfig',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -74,14 +75,13 @@ WSGI_APPLICATION = 'front_end.wsgi.application'
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'greenhouse',
-        'USER': 'greenhouse',
-        'PASSWORD': 'greenhouse',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dict(
+        ENGINE='django.db.backends.postgresql',
+        NAME=os.getenv('DB_NAME', 'greenhouse'),
+        USER=os.getenv('DB_USER', 'greenhouse'),
+        PASSWORD=os.getenv('DB_PASSWORD', 'greenhouse'),
+        HOST=os.getenv('DB_HOST', 'localhost'),
+        PORT=os.getenv('DB_PORT', '5432'),)
 }
 
 

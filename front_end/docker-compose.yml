@@ -10,9 +10,9 @@ db:
   networks:
     - backend
   environment:
-      - POSTGRES_USER:'test_user'
-      - POSTGRES_PASSWORD:'test_pass'
-      - POSTGRES_DB:'Django'
+      - POSTGRES_USER: 'test_user'
+      - POSTGRES_PASSWORD: 'test_pass'
+      - POSTGRES_DB: 'Django'
   healthcheck:
         test: ["CMD", "curl", "-f", "http://localhost:15672"]
         interval: 30s
@@ -33,6 +33,12 @@ influxdb:
         timeout: 10s
         retries: 5
 web_view:
+  environment:
+    - DB_NAME: 'greenhouse'
+    - DB_USER: 'greenhouse'
+    - DB_PASSWORD: 'greenhouse'
+    - DB_HOST: 'localhost'
+    - DB_HOST: '5432'
   build: .
   command: python3 manage.py runserver 0.0.0.0:80
   ports:
