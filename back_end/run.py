@@ -1,11 +1,6 @@
-#! /usr/env python3
 from back_end.configuration import Config
-
-
-def init_logs():
-    """This function initializes the logging for the entire application. This
-    function calls an external function from log.py to do the heavy lifting. """
-    pass
+from back_end.database_connection import DataBaseConnector
+from back_end.log import GreenHouseLog
 
 
 def parse_args():
@@ -14,11 +9,10 @@ def parse_args():
     pass
 
 
-if __name__ == __main__:
+if __name__ == '__main__':
     parse_args()
-    Config.configure()
-    init_logs()
-
-    pass
+    Config().configure()
+    GreenHouseLog().set_up_loggers(stderr=True)
+    DataBaseConnector().check_connection()
 
 

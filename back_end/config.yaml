@@ -1,0 +1,6 @@
+postgres:
+  port: '5432'
+  db: 'greenhouse'
+  username: 'greenhouse'
+  password: 'greenhouse'
+  host: 'localhost'
