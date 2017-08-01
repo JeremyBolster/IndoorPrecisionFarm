@@ -4,3 +4,23 @@ postgres:
   username: 'greenhouse'
   password: 'greenhouse'
   host: 'localhost'
+
+communication:
+  arduinoDevice: "/dev/tty.usbmodem1411"
+  arduinoCommands:
+    -
+      - sensorValue
+      - ss
+    -
+      - commandReceived
+      - ss
+    -
+      - toggleDevice
+      - ss
+  sensorList:
+    - "Water Temp"
+    - "lux"
+    - "pH"
+    - "Humidity"
+    - "Air Temp"
+    - "C02"

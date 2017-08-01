@@ -11,8 +11,8 @@ def parse_args():
 
 if __name__ == '__main__':
     parse_args()
-    Config().configure()
     GreenHouseLog().set_up_loggers(stderr=True)
+    Config().configure()
     DataBaseConnector().check_connection()
 
 
