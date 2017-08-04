@@ -8,7 +8,7 @@ There are multiple systems for the food computer.
  4. Visualization (UI/UX)
 
 ##Operations:
-Operations are the bare minimum for the food computer. It needs to be able to stabilize and modify the environment inside of the system. We will first cover the control of the sensors then the stabilization of the environment and lastly modification of the environment.
+The bare minimum for the food computer are its core operations. It needs to be able to stabilize and modify the environment inside of the system. We will first cover the control of the sensors then the stabilization of the environment and lastly modification of the environment.
 
 List of python class objects:
 

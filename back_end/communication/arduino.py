@@ -66,7 +66,7 @@ class Arduino(Communication):
             time.sleep(POLL_INTERVAL / len(self.sensor_list))
             with self.lock:
                 msg = self.cmd.receive()
-            self.log.verbose('Received message from Arduino: %s', str(msg))
+            self.log.log(5, 'Received message from Arduino: %s', str(msg))
             message_type = msg[0]
             device = msg[1][0]
             value = msg[1][1]
