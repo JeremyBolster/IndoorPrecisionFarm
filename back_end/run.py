@@ -1,18 +1,17 @@
 from back_end.configuration import Config
 from back_end.database_connection import DataBaseConnector
 from back_end.log import GreenHouseLog
+import click
 
 
-def parse_args():
-    """ This function parses the command line arguments and verifies that they
-    are set sanely. """
-    pass
-
-
-if __name__ == '__main__':
-    parse_args()
-    GreenHouseLog().set_up_loggers(stderr=True)
+@click.command()
+@click.option('--output', default=True, help='Specify if logs should appear on stderr.', type=click.BOOL)
+@click.option('--logfile', default='./greenhouse.log', help='Specify the output location of the logfile.', type=click.format_filename)
+def cli(output, logfile):
+    GreenHouseLog().set_up_loggers(logfile, output)
     Config().configure()
     DataBaseConnector().check_connection()
 
 
+if __name__ == '__main__':
+    cli()

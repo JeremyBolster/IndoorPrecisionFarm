@@ -1,6 +1,10 @@
 import logging
 from back_end.communication.communication import Communication
 
+device_to_generic_output = {'water_temp': 20,
+                            'air_temp': 25,
+                            }
+
 
 class ArduinoSimulated(Communication):
     """
@@ -13,7 +17,7 @@ class ArduinoSimulated(Communication):
         self.log.setLevel(logging.DEBUG)
 
     def send_msg(self, device: str, msg: str) -> bool:
-        pass
+        return True
 
     def receive_msg(self, device: str) -> dict:
         pass
