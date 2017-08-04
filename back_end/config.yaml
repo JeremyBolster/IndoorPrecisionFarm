@@ -4,7 +4,12 @@ postgres:
   username: 'greenhouse'
   password: 'greenhouse'
   host: 'localhost'
-
+influxdb:
+  port: '8086'
+  db: 'greenhouse'
+  username: 'greenhouse'
+  password: 'greenhouse'
+  host: 'localhost'
 communication:
   arduinoDevice: "/dev/tty.usbmodem1411"
   arduinoCommands:

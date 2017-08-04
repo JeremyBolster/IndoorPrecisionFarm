@@ -1,6 +1,8 @@
 import logging
 from back_end.configuration import Config
 
+ON, OFF = 'ON', 'OFF'
+
 
 class Communication(object):
     """

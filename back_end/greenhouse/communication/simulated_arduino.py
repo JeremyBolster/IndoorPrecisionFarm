@@ -1,5 +1,5 @@
 import logging
-from back_end.communication.communication import Communication
+from back_end.greenhouse.communication.communication import Communication
 
 device_to_generic_output = {'water_temp': 20,
                             'air_temp': 25,

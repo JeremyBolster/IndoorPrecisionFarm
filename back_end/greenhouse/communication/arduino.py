@@ -4,7 +4,7 @@ import collections
 import time
 import threading
 from threading import Thread
-from back_end.communication.communication import Communication
+from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
 
 POLL_INTERVAL = 30  # poll interval for each sensor in seconds
