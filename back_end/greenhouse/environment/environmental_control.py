@@ -20,12 +20,13 @@ class EnvironmentalControl(object):
         self.greenhouse_status = status
         self.environment = None
         self.lock = threading.Lock()
-        self.set_up_thread()
+        self.thread = self.set_up_thread()
 
-    def set_up_thread(self):
+    def set_up_thread(self) -> Thread:
         th = Thread(target=self._set_environment)
         th.daemon = True
         th.start()
+        return th
 
     def set_environment(self, desired_environment: Environment) -> None:
         """

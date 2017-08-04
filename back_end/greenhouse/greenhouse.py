@@ -1,7 +1,12 @@
 from back_end.configuration import Config
 from back_end.greenhouse.communication.communication import Communication
+from back_end.databases.time_series_database_connection import TSDataBaseConnector
+from back_end.greenhouse.environment.environment import Environment
+from back_end.greenhouse.environment.environmental_control import EnvironmentalControl
+from back_end.greenhouse.communication.simulated_arduino import ArduinoSimulated
 
 import logging
+import yaml
 
 
 class Greenhouse(object):
@@ -19,10 +24,21 @@ class Greenhouse(object):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
+        self.greenhouse = None
+        self.current_state = None
+        self.remote_store = None
+        self.pattern = None
+        self.control = None
 
     def setup(self,
-              greenhouse: Communication,
+              greenhouse: Communication=ArduinoSimulated(),
               climate_pattern: str='./default_climate.yaml',
-              remote_store=None) -> None:
-        # TODO add a type to remote store so that I can figure out how to use it
-        pass
+              remote_store: TSDataBaseConnector=None
+              ) -> None:
+        self.greenhouse = greenhouse
+        self.current_state = Environment()
+        self.remote_store = remote_store
+        with open(climate_pattern) as f:
+            self.pattern = yaml.safe_load(f.read())
+        # TODO set the current state of the greenhouse to the desired state at the beginning
+        self.control = EnvironmentalControl(self.greenhouse, self.current_state)
