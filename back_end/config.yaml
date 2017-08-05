@@ -22,10 +22,10 @@ communication:
     -
       - toggleDevice
       - ss
-  sensorList:
-    - "Water Temp"
-    - "lux"
-    - "pH"
-    - "Humidity"
-    - "Air Temp"
-    - "C02"
+sensorList:
+  - "Water Temp"
+  - "lux"
+  - "pH"
+  - "Humidity"
+  - "Air Temp"
+  - "C02"

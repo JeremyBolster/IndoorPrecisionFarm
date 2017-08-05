@@ -47,6 +47,9 @@ class TSDataBaseConnector(object):
 
         client.write_points(json_body)
 
+    def send_metric(self, measurement: str, timestamp: str, fields: dict):
+        pass
+
     def __execute(self):
         # TODO implement this
         pass

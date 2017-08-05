@@ -4,6 +4,7 @@ import collections
 import time
 import threading
 from threading import Thread
+from typing import Dict, Any
 from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
 
@@ -29,7 +30,7 @@ class Arduino(Communication):
         # TODO auto-detect arduino
         arduino = PyCmdMessenger.ArduinoBoard(Config.config['communication']['arduinoDevice'], baud_rate=9600)
         self.cmd = PyCmdMessenger.CmdMessenger(arduino, Config.config['communication']['arduinoCommands'])
-        th = Thread(target=self.poll_sensors)
+        th = Thread(target=self._poll_sensors)
         th.daemon = True
         th.start()
 
@@ -48,7 +49,7 @@ class Arduino(Communication):
         # TODO something smarter with this in case of error
         return 'success' == return_msg[1][1]
 
-    def receive_msg(self, device: str) -> dict:
+    def receive_msg(self, device: str) -> Dict[str, Any]:
         """
         This method gets the stored messages for a given sensor from the queue.
         :param device: The device to recieve messages for
@@ -59,7 +60,7 @@ class Arduino(Communication):
             self.devices['device'] = {}
         return messages
 
-    def poll_sensors(self):
+    def _poll_sensors(self):
         self.log.debug('Beginning sensor poll loop in daemonized thread.')
         time.sleep(POLL_INTERVAL)
         while True:

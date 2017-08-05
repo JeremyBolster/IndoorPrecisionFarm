@@ -18,7 +18,7 @@ class EnvironmentalControl(object):
         self.config = Config.config
         self.greenhouse = greenhouse
         self.greenhouse_status = status
-        self.environment = None
+        self.desired_environment = None
         self.lock = threading.Lock()
         self.thread = self.set_up_thread()
 
@@ -36,7 +36,7 @@ class EnvironmentalControl(object):
         :return: None
         """
         with self.lock:
-            self.environment = desired_environment
+            self.desired_environment = desired_environment
 
     def _set_environment(self) -> None:
         """
@@ -47,11 +47,11 @@ class EnvironmentalControl(object):
             time.sleep(REFRESH_INTERVAL)
             th = Thread()
             with self.lock:
-                if self.environment:
+                if self.desired_environment:
                     # By passing environment as a reference we can let this call be threaded, thus releasing the lock
-                    th = Thread(target=self._update_environment, args=[self.environment])
-                    th.daemon = True
-                    th.start()
+                    th = Thread(target=self._update_environment, args=[self.desired_environment])
+            th.daemon = True
+            th.start()
             th.join()
 
     def _update_environment(self, environment: Environment) -> None:
