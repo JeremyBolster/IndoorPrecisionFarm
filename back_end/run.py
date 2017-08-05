@@ -9,12 +9,12 @@ import time
 
 
 @click.group()
-@click.option('--color', help='Specify if logs should be colored or not')
+@click.option('--color', is_flag=True, help='Specify if logs should be colored or not')
 @click.option('--output', default=True, help='Specify if logs should appear on stderr.', type=click.BOOL)
 @click.option('--logfile', default='./greenhouse.log', help='Specify the output location of the logfile.', type=click.format_filename)
 def cli(color, output, logfile):
     # TODO add color option
-    GreenHouseLog().set_up_loggers(logfile, output)
+    GreenHouseLog().set_up_loggers(logfile, output, color)
     Config().configure()
     DataBaseConnector().check_connection()
     TSDataBaseConnector().check_connection()

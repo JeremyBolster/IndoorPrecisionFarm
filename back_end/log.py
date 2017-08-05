@@ -5,7 +5,8 @@ from logging.handlers import RotatingFileHandler
 
 COLOR_LOG_FORMAT = '%(asctime)s %(log_color)s%(levelname)-8s%(reset)s | %(name)20s | %(filename)25s %(lineno)3s | %(log_color)s%(message)s%(reset)s'
 LOG_FORMAT = '%(asctime)s %(levelname)-8s | %(name)20s | %(filename)25s %(lineno)3s | %(message)s'
-formatter = ColoredFormatter(fmt=COLOR_LOG_FORMAT, datefmt='%H:%M:%S')
+c_formatter = ColoredFormatter(fmt=COLOR_LOG_FORMAT, datefmt='%H:%M:%S')
+formatter = logging.Formatter(fmt=LOG_FORMAT, datefmt='%H:%M:%S')
 
 
 class GreenHouseLog(object):
@@ -13,7 +14,7 @@ class GreenHouseLog(object):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
 
-    def set_up_loggers(self, file_path: str, stderr: bool, log_level: int=logging.DEBUG) -> None:
+    def set_up_loggers(self, file_path: str, stderr: bool, color: bool, log_level: int=logging.DEBUG) -> None:
         root = logging.getLogger()
         root.setLevel(log_level)
 
@@ -26,5 +27,8 @@ class GreenHouseLog(object):
         if stderr:
             ch = logging.StreamHandler(sys.stderr)
             ch.setLevel(log_level)
-            ch.setFormatter(formatter)
+            if color:
+                ch.setFormatter(c_formatter)
+            else:
+                ch.setFormatter(formatter)
             root.addHandler(ch)
