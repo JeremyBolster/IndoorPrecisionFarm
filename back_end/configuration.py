@@ -28,4 +28,4 @@ class Config(object):
 
         with open(config_file_name) as f:
             Config.config = yaml.safe_load(f.read())
-            self.log.debug("Configuration loaded as %s", str(Config.config))
+            self.log.debug("Configuration loaded as %s", yaml.dump(Config.config, indent=2))

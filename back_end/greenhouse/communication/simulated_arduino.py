@@ -3,6 +3,10 @@ from back_end.greenhouse.communication.communication import Communication
 
 device_to_generic_output = {'water_temp': 20,
                             'air_temp': 25,
+                            'lux': 1200,
+                            'pH': 7,
+                            'humidity': .4,
+                            'co2': 600
                             }
 
 
@@ -20,4 +24,4 @@ class ArduinoSimulated(Communication):
         return True
 
     def receive_msg(self, device: str) -> dict:
-        pass
+        return {'device': device_to_generic_output['device']}
