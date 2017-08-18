@@ -8,13 +8,13 @@ class Environment(object):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
-        self.water_temp = None
-        self.ph = None
+        self.waterTemp = None
+        self.pH = None
         self.soil_moisture = None
-        self.air_temp = None
+        self.airTemp = None
         self.circulation = None
         self.co2 = None
-        self.light_level = None
+        self.lux = None
         self.humidity = None
 
     def setup(self,
@@ -30,20 +30,20 @@ class Environment(object):
               humidity: float=.4) -> None:
 
         if soil and hydroponic:
-            self.log.error('Only one of soil or bool type may be specified for a given environment.')
-            raise AttributeError('Only one of soil or bool type may be specified for a given environment.')
+            self.log.error('Only one of soil or hydroponic type may be specified for a given environment.')
+            raise AttributeError('Only one of soil or hydroponic type may be specified for a given environment.')
 
-        self.ph = ph
-        self.air_temp = air_temp
+        self.pH = ph
+        self.airTemp = air_temp
         self.circulation = circulation
         self.co2 = co2
-        self.light_level = light_level
+        self.lux = light_level
         self.humidity = humidity
 
         if soil:
             self.soil_moisture = soil_moisture
 
         if hydroponic:
-            self.water_temp = water_temp
+            self.waterTemp = water_temp
 
 

@@ -74,15 +74,25 @@ class Greenhouse(object):
         self.log.info('Running greenhouse')
         # TODO loop to create a new desired state of the greenhouse
         # TODO loop to update the environmental_control class with the new desired state of the greenhouse
-        # TODO loop to update the current state of the greenhouse
-        # TODO push to current state of the green house to the tsdb
         while True:
             time.sleep(15)
-            for sensor in self.config['sensorList']:
-                new_statues = self.greenhouse.receive_msg(sensor)
-                for timed_status in new_statues.values():
-                    for timestamp, status in timed_status.items():
-                        self._push_state(sensor, timestamp, status)
+            self._get_sensor_data()
+            self._update_desired_state()
+
+    def _update_desired_state(self):
+        self.log.info(yaml.dump(self.pattern, indent=2))
+        pass
+
+    def _get_sensor_data(self):
+        for sensor in self.config['sensorList']:
+            new_statues = self.greenhouse.receive_msg(sensor)
+            newest_timestamp = 0
+            for timestamp, status in new_statues.items():
+                self._push_state(sensor, timestamp, status)
+                if int(timestamp) > int(newest_timestamp):
+                    newest_timestamp = timestamp
+            getattr(self.current_state, sensor)  # TODO remove this, its just for debug
+            setattr(self.current_state, sensor, new_statues[newest_timestamp])
 
     def _push_state(self, sensor: str, timestamp: str, status: str):
         if not self.remote_store:
