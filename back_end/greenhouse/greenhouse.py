@@ -80,6 +80,7 @@ class Greenhouse(object):
             self._update_desired_state()
 
     def _update_desired_state(self):
+        # TODO make this update the actual state of the greenhouse
         self.log.info(yaml.dump(self.pattern, indent=2))
         pass
 

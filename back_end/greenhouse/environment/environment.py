@@ -4,14 +4,18 @@ import logging
 
 
 class Environment(object):
+    """
+    This class is a data structure. The main purpose of this class is to encapsulate an environmental state. This state
+    can be either physical or virtual.
+    """
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
-        self.waterTemp = None
+        self.water_temp = None
         self.pH = None
         self.soil_moisture = None
-        self.airTemp = None
+        self.air_temp = None
         self.circulation = None
         self.co2 = None
         self.lux = None
@@ -34,7 +38,7 @@ class Environment(object):
             raise AttributeError('Only one of soil or hydroponic type may be specified for a given environment.')
 
         self.pH = ph
-        self.airTemp = air_temp
+        self.air_temp = air_temp
         self.circulation = circulation
         self.co2 = co2
         self.lux = light_level
@@ -44,6 +48,4 @@ class Environment(object):
             self.soil_moisture = soil_moisture
 
         if hydroponic:
-            self.waterTemp = water_temp
-
-
+            self.water_temp = water_temp

@@ -62,12 +62,12 @@ class EnvironmentalControl(object):
         :return: None
         """
         self._water_temp(environment.water_temp)  # only works if hydroponic
-        self._ph(environment.ph)  # Handles either soil or water ph
+        self._ph(environment.pH)  # Handles either soil or water ph
         self._soil_moisture(environment.soil_moisture)  # only works if soil based
         self._air_temp(environment.air_temp)
         self._circulation(environment.circulation)
         self._co2(environment.co2)
-        self._lighting(environment.light_level)
+        self._lighting(environment.lux)
         self._humidity(environment.humidity)
 
     def _water_temp(self, desired):
@@ -77,7 +77,7 @@ class EnvironmentalControl(object):
         self.greenhouse.send_msg('water_cooler', water_cooler)
 
     def _ph(self, desired):
-        current = self.greenhouse_status.ph
+        current = self.greenhouse_status.pH
         ph_up, ph_down = self._on_off(current, desired)
         self.greenhouse.send_msg('ph_up', ph_up)
         self.greenhouse.send_msg('ph_down', ph_down)
@@ -106,7 +106,7 @@ class EnvironmentalControl(object):
 
     def _lighting(self, desired):
         # TODO this will probably flicker horribly
-        current = self.greenhouse_status.light_level
+        current = self.greenhouse_status.lux
         lights, _ = self._on_off(current, desired)
         self.greenhouse.send_msg('lights', lights)
 
@@ -116,7 +116,8 @@ class EnvironmentalControl(object):
         self.greenhouse.send_msg('humidifier', humidifier)
         self.greenhouse.send_msg('dehumidifier', dehumidifier)
 
-    def _on_off(self, current, desired):
+    @staticmethod
+    def _on_off(current, desired):
         one = OFF
         two = OFF
         if current < desired:  # TODO add tolerance

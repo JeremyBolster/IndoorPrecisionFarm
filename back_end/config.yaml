@@ -23,9 +23,9 @@ communication:
       - toggleDevice
       - ss
 sensorList:
-  - "waterTemp"
+  - "water_temp"
   - "lux"
   - "pH"
   - "humidity"
-  - "airTemp"
+  - "air_temp"
   - "co2"

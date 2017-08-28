@@ -14,7 +14,8 @@ class GreenHouseLog(object):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
 
-    def set_up_loggers(self, file_path: str, stderr: bool, color: bool, log_level: int=logging.DEBUG) -> None:
+    @staticmethod
+    def set_up_loggers(file_path: str, stderr: bool, color: bool, log_level: int=logging.DEBUG) -> None:
         root = logging.getLogger()
         root.setLevel(log_level)
 

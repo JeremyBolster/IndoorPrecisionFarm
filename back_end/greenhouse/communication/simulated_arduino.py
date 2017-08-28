@@ -2,8 +2,8 @@ import logging
 from back_end.greenhouse.communication.communication import Communication
 from typing import Dict, Any
 
-device_to_generic_output = {'waterTemp': {'123': '20'},
-                            'airTemp': {'123': '25'},
+device_to_generic_output = {'water_temp': {'123': '20'},
+                            'air_temp': {'123': '25'},
                             'lux': {'123': '1200'},
                             'pH': {'123': '7'},
                             'humidity': {'123': '.4'},
