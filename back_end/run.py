@@ -4,6 +4,7 @@ from back_end.databases.time_series_database_connection import TSDataBaseConnect
 from back_end.log import GreenHouseLog
 from back_end.greenhouse.greenhouse import Greenhouse
 from back_end.greenhouse.communication.simulated_arduino import ArduinoSimulated
+from back_end.rest_endpoint.views import RestEndpoint
 import click
 import time
 
@@ -27,6 +28,8 @@ def run(device, pattern):
     """Run an instance of a greenhouse"""
     # TODO do something with the device
     # TODO we should while true this I guess
+    rest = RestEndpoint()
+    rest.app.run(host='0.0.0.0', port=8000)
     greenhouse = Greenhouse()
     greenhouse.setup(ArduinoSimulated(), pattern)
     greenhouse.run()

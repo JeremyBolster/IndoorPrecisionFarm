@@ -7,8 +7,10 @@ from threading import Thread
 from typing import Dict, Any
 from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
+from serial.tools import list_ports
 
 POLL_INTERVAL = 30  # poll interval for each sensor in seconds
+ARDUINO_ID = 'Arduino'
 
 
 class Arduino(Communication):
@@ -27,12 +29,38 @@ class Arduino(Communication):
 
     def initialize_arduino(self):
         # TODO error checking
-        # TODO auto-detect arduino
-        arduino = PyCmdMessenger.ArduinoBoard(Config.config['communication']['arduinoDevice'], baud_rate=9600)
+        arduino = PyCmdMessenger.ArduinoBoard(self.find_arduino(), baud_rate=9600)
         self.cmd = PyCmdMessenger.CmdMessenger(arduino, Config.config['communication']['arduinoCommands'])
         th = Thread(target=self._poll_sensors)
         th.daemon = True
         th.start()
+
+    def find_arduino(self, hwid: str = None) -> str:
+        arduinos = [
+            p.device
+            for p in list_ports.comports()
+            if ARDUINO_ID in p.description
+        ]
+        if not arduinos:
+            self.log.error('No Arduinos were found.')
+            raise IOError('No Arduino detected')
+
+        if len(arduinos) > 1 and not hwid:
+            self.log.error('Multiple arduinos found and not unique ID specified. Dumping found Arduinos and failing.')
+            for ard in arduinos:
+                self.log.info(
+                    "Device: %s , Name: %s , Description: %s , HWID: %s , VID: %s , PID: %s , Serial No.: %s " %
+                    ard.device, ard.name, ard.description, ard.hwid, ard.vid, ard.pid, ard.serial_number)
+            raise IOError('Cannot determine which Arduino to ues. Failing.')
+
+        return arduinos[0]
+
+        # >>> print(serial.tools.list_ports.comports().pop(1).device)
+        # /dev/cu.usbmodem1411
+        # >>> print(serial.tools.list_ports.comports().pop(1).name)
+        # None
+        # >>> print(serial.tools.list_ports.comports().pop(1).description)
+        # Arduino Mega
 
     def send_msg(self, sensor: str, msg: str) -> bool:
         """
