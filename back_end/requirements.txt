@@ -5,3 +5,4 @@ pyserial==3.4
 pytz==2017.2
 PyYAML==3.12
 click
+flask

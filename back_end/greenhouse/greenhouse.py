@@ -10,7 +10,16 @@ import yaml
 import os
 
 
-class Greenhouse(object):
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+class Greenhouse(object, metaclass=Singleton):
     """
     The greenhouse class is a complete system for controlling a greenhouse. It contains all of the following:
     1. Communication to the greenhouse

@@ -25,17 +25,23 @@ class RestEndpoint(object):
         This endpoint returns the list of the current working sensors for the farm.
         """
         # TODO implement a mechanism for returning a list of the current working sensors
-        return ''
+        return json.dumps({
+            'message': '',
+            'success': True
+        }), 200
 
     @staticmethod
-    @app.route('/sensors/<string:device>', methods=['GET'])
-    def device(device):
+    @app.route('/sensors/<string:type>', methods=['GET'])
+    def device(type):
         """
-        This endpoint returns the current value of the specified sensor/device.
-        :param device: Specified sensor to get the value for.
+        This endpoint returns the current value of the specified sensor reading. eg. water_temp
+        :param type: Specified environment variable to get the value for.
         """
         # TODO this
-        return ''
+        return json.dumps({
+            'message': '',
+            'success': True
+        }), 200
 
     @staticmethod
     @app.route('/climate', methods=['GET', 'POST'])
@@ -48,7 +54,10 @@ class RestEndpoint(object):
             pass
         else:
             pass
-        return ''
+        return json.dumps({
+            'message': '',
+            'success': True
+        }), 200
 
     @staticmethod
     @app.route('/status', methods=['GET'])
@@ -58,7 +67,10 @@ class RestEndpoint(object):
         of the climate pattern. It also displays any recoverable errors that have recently been caught.
         """
         # TODO this
-        return ''
+        return json.dumps({
+            'message': '',
+            'success': True
+        }), 200
 
     @staticmethod
     @app.route('/<path:path>')
