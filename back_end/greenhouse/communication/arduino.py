@@ -26,6 +26,7 @@ class Arduino(Communication):
         self.log.setLevel(logging.DEBUG)
         self.cmd = None
         self.devices = collections.defaultdict(lambda: {})
+        self.initialize_arduino()
 
     def initialize_arduino(self):
         # TODO error checking
@@ -54,13 +55,6 @@ class Arduino(Communication):
             raise IOError('Cannot determine which Arduino to ues. Failing.')
 
         return arduinos[0]
-
-        # >>> print(serial.tools.list_ports.comports().pop(1).device)
-        # /dev/cu.usbmodem1411
-        # >>> print(serial.tools.list_ports.comports().pop(1).name)
-        # None
-        # >>> print(serial.tools.list_ports.comports().pop(1).description)
-        # Arduino Mega
 
     def send_msg(self, sensor: str, msg: str) -> bool:
         """

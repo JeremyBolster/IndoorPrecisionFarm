@@ -3,10 +3,12 @@ from back_end.databases.database_connection import DataBaseConnector
 from back_end.databases.time_series_database_connection import TSDataBaseConnector
 from back_end.log import GreenHouseLog
 from back_end.greenhouse.greenhouse import Greenhouse
+from back_end.greenhouse.communication.arduino import Arduino
 from back_end.greenhouse.communication.simulated_arduino import ArduinoSimulated
 from back_end.rest_endpoint.views import RestEndpoint
 import click
 import time
+from threading import Thread
 
 
 @click.group()
@@ -17,21 +19,27 @@ def cli(color, output, logfile):
     # TODO add color option
     GreenHouseLog().set_up_loggers(logfile, output, color)
     Config().configure()
-    DataBaseConnector().check_connection()
-    TSDataBaseConnector().check_connection()
+    # DataBaseConnector().check_connection()
+    # TSDataBaseConnector().check_connection()
 
 
 @cli.command()
-@click.option('--device', help='Specify the device to connect to sensors with. E.G. /dev/xyz  or simulated')
+@click.option('--device', help='Specify the device to connect to sensors with. E.G.  simulated')
 @click.option('--pattern', help='Specify the climate pattern to run.', type=click.format_filename)
 def run(device, pattern):
     """Run an instance of a greenhouse"""
     # TODO do something with the device
     # TODO we should while true this I guess
     rest = RestEndpoint()
-    rest.app.run(host='0.0.0.0', port=8000)
+    th = Thread(target=rest.app.run, args=['0.0.0.0', 8000])
+    th.daemon = True
+    th.start()
     greenhouse = Greenhouse()
-    greenhouse.setup(ArduinoSimulated(), pattern)
+    if device in 'simulated':
+        com_dev = ArduinoSimulated()
+    else:
+        com_dev = Arduino()
+    greenhouse.setup(com_dev, pattern)
     greenhouse.run()
     time.sleep(30)
 
