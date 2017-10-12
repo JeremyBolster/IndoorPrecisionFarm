@@ -2,12 +2,12 @@ import logging
 from back_end.greenhouse.communication.communication import Communication
 from typing import Dict, Any
 
-device_to_generic_output = {'water_temp': {'123': '20'},
-                            'air_temp': {'123': '25'},
-                            'lux': {'123': '1200'},
-                            'pH': {'123': '7'},
-                            'humidity': {'123': '.4'},
-                            'co2': {'123': '600'}
+device_to_generic_output = {'water_temp': {123: 20},
+                            'air_temp': {123: 25},
+                            'lux': {123: 1200},
+                            'pH': {123: 7},
+                            'humidity': {123: .4},
+                            'co2': {123: 600}
                             }
 
 
@@ -24,5 +24,5 @@ class ArduinoSimulated(Communication):
     def send_msg(self, device: str, msg: str) -> bool:
         return True
 
-    def receive_msg(self, device: str) -> Dict[str, Any]:
+    def receive_msg(self, device: str) -> Dict[float, float]:
         return device_to_generic_output[device]

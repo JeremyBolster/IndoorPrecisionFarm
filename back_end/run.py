@@ -41,7 +41,7 @@ def run(device, pattern):
         com_dev = Arduino()
     greenhouse.setup(com_dev, pattern)
     greenhouse.run()
-    time.sleep(30)
+    time.sleep(90)
 
 
 @cli.command('check-db')

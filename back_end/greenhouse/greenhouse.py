@@ -36,7 +36,7 @@ class Greenhouse(object, metaclass=Singleton):
         self.config = Config.config
         self.greenhouse = None
         self.current_state = None
-        self.remote_store = None
+        self.remote_data_store = None
         self.pattern = None
         self.control = None
         self.running = False
@@ -51,7 +51,7 @@ class Greenhouse(object, metaclass=Singleton):
         """
         self.greenhouse = greenhouse
         self.current_state = Environment()
-        self.remote_store = remote_store
+        self.remote_data_store = remote_store
         climate_file_name = os.path.join(
             os.path.dirname(__file__),
             os.path.pardir,
@@ -84,13 +84,13 @@ class Greenhouse(object, metaclass=Singleton):
         # TODO loop to create a new desired state of the greenhouse
         # TODO loop to update the environmental_control class with the new desired state of the greenhouse
         while True:
-            time.sleep(15)
+            time.sleep(15)  # TODO this is hacky
             self._get_sensor_data()
             self._update_desired_state()
 
     def _update_desired_state(self):
         # TODO make this update the actual state of the greenhouse
-        self.log.info(yaml.dump(self.pattern, indent=2))
+        # self.log.info(yaml.dump(self.pattern, indent=2))
         pass
 
     def _get_sensor_data(self):
@@ -102,13 +102,12 @@ class Greenhouse(object, metaclass=Singleton):
                 if int(timestamp) > int(newest_timestamp):
                     newest_timestamp = timestamp
             if newest_timestamp:
-                print(sensor)
-                print(new_statues[newest_timestamp])
-                getattr(self.current_state, sensor)  # TODO remove this, its just for debug
                 setattr(self.current_state, sensor, new_statues[newest_timestamp])
 
+        self.log.debug(self.current_state)
+
     def _push_state(self, sensor: str, timestamp: str, status: str):
-        if not self.remote_store:
-            self.log.debug('(Faux) Pushed %s at %s with a value of %s', sensor, timestamp, status)
+        if not self.remote_data_store:
+            # self.log.debug('(Faux) Pushed %s at %s with a value of %s', sensor, timestamp, status)
             return
-        self.remote_store.send_metric(sensor, timestamp, status)
+        self.remote_data_store.send_metric(sensor, timestamp, status)

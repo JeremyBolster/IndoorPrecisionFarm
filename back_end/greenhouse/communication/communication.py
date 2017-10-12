@@ -19,5 +19,5 @@ class Communication(object):
     def send_msg(self, device: str, msg: str) -> bool:
         raise NotImplementedError
 
-    def receive_msg(self, device: str) -> Dict[str, Any]:
+    def receive_msg(self, device: str) -> Dict[float, float]:
         raise NotImplementedError

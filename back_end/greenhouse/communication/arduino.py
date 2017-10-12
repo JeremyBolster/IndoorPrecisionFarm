@@ -18,7 +18,6 @@ class Arduino(Communication):
     """
     This is a class used to connect to an Arduino for communication to sensors.
     """
-
     lock = threading.Lock()
 
     def __init__(self):
@@ -72,15 +71,15 @@ class Arduino(Communication):
         # TODO something smarter with this in case of error
         return 'success' == return_msg[1][1]
 
-    def receive_msg(self, device: str) -> Dict[str, Any]:
+    def receive_msg(self, device: str) -> Dict[float, float]:
         """
         This method gets the stored messages for a given sensor from the queue.
-        :param device: The device to recieve messages for
+        :param device: The device to receive messages for
         :return: The messages of a given sensor. This is a dictionary mapping from the timestamp to the 'value'
         """
         with self.lock:
-            messages = self.devices['device']
-            self.devices['device'] = {}
+            messages = self.devices[device]
+            self.devices[device] = {}
         return messages
 
     def _poll_sensors(self):
@@ -94,11 +93,11 @@ class Arduino(Communication):
             while self._receive_sensor_poll():
                 continue
 
-    def _receive_sensor_poll(self):
+    def _receive_sensor_poll(self)->bool:
         with self.lock:
-            msg = self.cmd.receive()  # TODO this should gather all of the messages not just one
+            msg = self.cmd.receive()
         if msg:
-            self.log.log(logging.DEBUG, 'Received message from Arduino: %s', str(msg))
+            self.log.log(5, 'Received message from Arduino: %s', str(msg))
             message_type = msg[0]
             device = msg[1][0]
             value = msg[1][1]

@@ -21,6 +21,17 @@ class Environment(object):
         self.lux = None
         self.humidity = None
 
+    def __str__(self):
+        return \
+            'water_temp = ' + str(self.water_temp) + \
+            ' pH = ' + str(self.pH) + \
+            ' soil_moisture = ' + str(self.soil_moisture) + \
+            ' air_temp = '+ str(self.air_temp) + \
+            ' circulation = ' + str(self.circulation) + \
+            ' co2 = ' + str(self.co2) + \
+            ' lux = ' + str(self.lux) + \
+            ' humidity = ' + str(self.humidity)
+
     def setup(self,
               soil: bool=False,
               hydroponic: bool=False,
