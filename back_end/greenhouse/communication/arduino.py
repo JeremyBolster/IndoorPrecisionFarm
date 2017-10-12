@@ -9,8 +9,9 @@ from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
 from serial.tools import list_ports
 
-POLL_INTERVAL = 30  # poll interval for each sensor in seconds
+POLL_INTERVAL = 15  # poll interval for each sensor in seconds
 ARDUINO_ID = 'Arduino'
+SUCCESS, FAILURE = True, False
 
 
 class Arduino(Communication):
@@ -88,12 +89,20 @@ class Arduino(Communication):
         while True:
             time.sleep(POLL_INTERVAL / len(self.sensor_list))
             with self.lock:
-                msg = self.cmd.receive()
-            self.log.log(5, 'Received message from Arduino: %s', str(msg))
+                self.cmd.send('poll')
+            time.sleep(1)  # TODO this is hacky
+            while self._receive_sensor_poll():
+                continue
+
+    def _receive_sensor_poll(self):
+        with self.lock:
+            msg = self.cmd.receive()  # TODO this should gather all of the messages not just one
+        if msg:
+            self.log.log(logging.DEBUG, 'Received message from Arduino: %s', str(msg))
             message_type = msg[0]
             device = msg[1][0]
             value = msg[1][1]
-            time_recieved = msg[2]
+            time_received = msg[2]
 
             if message_type not in 'sensorValue':
                 # TODO do something more sensible with this error
@@ -101,7 +110,10 @@ class Arduino(Communication):
                 raise AttributeError
 
             if device in 'null':
-                return
+                return FAILURE
             with self.lock:
-                device = self.devices['device']
-                device.extend({time_recieved: value})
+                device_values = self.devices[device]
+                device_values[time_received] = value
+                return SUCCESS
+        else:
+            return FAILURE

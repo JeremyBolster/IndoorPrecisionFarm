@@ -101,8 +101,11 @@ class Greenhouse(object, metaclass=Singleton):
                 self._push_state(sensor, timestamp, status)
                 if int(timestamp) > int(newest_timestamp):
                     newest_timestamp = timestamp
-            getattr(self.current_state, sensor)  # TODO remove this, its just for debug
-            setattr(self.current_state, sensor, new_statues[newest_timestamp])
+            if newest_timestamp:
+                print(sensor)
+                print(new_statues[newest_timestamp])
+                getattr(self.current_state, sensor)  # TODO remove this, its just for debug
+                setattr(self.current_state, sensor, new_statues[newest_timestamp])
 
     def _push_state(self, sensor: str, timestamp: str, status: str):
         if not self.remote_store:

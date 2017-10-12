@@ -17,10 +17,16 @@ communication:
       - ss
     -
       - commandReceived
-      - ss
+      - ""
     -
       - toggleDevice
       - ss
+    -
+      - poll
+      - ""
+    -
+      - error
+      - s
 sensorList:
   - "water_temp"
   - "lux"
