@@ -1,6 +1,7 @@
 from flask import Flask
 from flask import request
 import json
+from back_end.greenhouse.greenhouse import Greenhouse
 
 
 class RestEndpoint(object):
@@ -51,13 +52,16 @@ class RestEndpoint(object):
         """
         # TODO this
         if request.method == 'POST':
-            pass
+            return json.dumps({
+                'message': 'Not Implemented',
+                'success': True
+            }), 200
         else:
-            pass
-        return json.dumps({
-            'message': '',
-            'success': True
-        }), 200
+            greenhouse = Greenhouse()
+            return json.dumps({
+                'message': greenhouse.current_state.to_json(),
+                'success': True
+            }), 200
 
     @staticmethod
     @app.route('/status', methods=['GET'])

@@ -1,6 +1,7 @@
 from back_end.configuration import Config
 
 import logging
+import json
 
 
 class Environment(object):
@@ -22,15 +23,19 @@ class Environment(object):
         self.humidity = None
 
     def __str__(self):
-        return \
-            'water_temp = ' + str(self.water_temp) + \
-            ' pH = ' + str(self.pH) + \
-            ' soil_moisture = ' + str(self.soil_moisture) + \
-            ' air_temp = '+ str(self.air_temp) + \
-            ' circulation = ' + str(self.circulation) + \
-            ' co2 = ' + str(self.co2) + \
-            ' lux = ' + str(self.lux) + \
-            ' humidity = ' + str(self.humidity)
+        return str(self.to_json())
+
+    def to_json(self):
+        return {
+            'water_temp': self.water_temp,
+            'pH': self.pH,
+            'soil_moisture': self.soil_moisture,
+            'air_temp': self.air_temp,
+            'circulation': self.circulation,
+            'co2': self.co2,
+            'lux': self.lux,
+            'humidity': self.humidity
+        }
 
     def setup(self,
               soil: bool=False,

@@ -24,7 +24,7 @@ def cli(color, output, logfile):
 
 
 @cli.command()
-@click.option('--device', help='Specify the device to connect to sensors with. E.G.  simulated')
+@click.option('--device', help='Specify the device to connect to sensors with. E.G.  simulated', default='arduino')
 @click.option('--pattern', help='Specify the climate pattern to run.', type=click.format_filename)
 def run(device, pattern):
     """Run an instance of a greenhouse"""

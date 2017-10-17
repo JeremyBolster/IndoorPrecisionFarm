@@ -34,14 +34,14 @@ class Greenhouse(object, metaclass=Singleton):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
-        self.greenhouse = None
+        self.sensors = None
         self.current_state = None
         self.remote_data_store = None
         self.pattern = None
         self.control = None
         self.running = False
 
-    def setup(self, greenhouse: Communication, climate_pattern: str, remote_store: TSDataBaseConnector=None) -> None:
+    def setup(self, sensors: Communication, climate_pattern: str, remote_store: TSDataBaseConnector=None) -> None:
         """
         This method sets the values of the greenhouse.
         :param greenhouse: The device that represents the sensors and devices of the physical greenhouse.
@@ -49,7 +49,7 @@ class Greenhouse(object, metaclass=Singleton):
         :param remote_store: The remote database to push metrics to.
         :return:
         """
-        self.greenhouse = greenhouse
+        self.sensors = sensors
         self.current_state = Environment()
         self.remote_data_store = remote_store
         climate_file_name = os.path.join(
@@ -61,7 +61,7 @@ class Greenhouse(object, metaclass=Singleton):
         with open(climate_file_name) as f:
             self.pattern = yaml.safe_load(f.read())
         # TODO set the current state of the greenhouse to the desired state at the beginning
-        self.control = EnvironmentalControl(self.greenhouse, self.current_state)
+        self.control = EnvironmentalControl(self.sensors, self.current_state)
 
     def run(self) -> None:
         """
@@ -95,17 +95,18 @@ class Greenhouse(object, metaclass=Singleton):
 
     def _get_sensor_data(self):
         for sensor in self.config['sensorList']:
-            new_statues = self.greenhouse.receive_msg(sensor)
+            new_statues = self.sensors.receive_msg(sensor)
             newest_timestamp = 0
             for timestamp, status in new_statues.items():
                 self._push_state(sensor, timestamp, status)
                 if int(timestamp) > int(newest_timestamp):
                     newest_timestamp = timestamp
-            if newest_timestamp:
+            if newest_timestamp:  # This checks if there even is a newer timestamp
                 setattr(self.current_state, sensor, new_statues[newest_timestamp])
 
         self.log.debug(self.current_state)
 
+    # TODO this
     def _push_state(self, sensor: str, timestamp: str, status: str):
         if not self.remote_data_store:
             # self.log.debug('(Faux) Pushed %s at %s with a value of %s', sensor, timestamp, status)
