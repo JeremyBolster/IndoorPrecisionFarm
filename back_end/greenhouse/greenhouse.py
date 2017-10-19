@@ -44,6 +44,7 @@ class Greenhouse(object, metaclass=Singleton):
         self.running = False
         self.start_time = 0
         self.time_offset = 0
+        self.elapsed_time = 0
 
     def setup(self, sensors: Communication, climate_pattern: str, remote_store: TSDataBaseConnector=None) -> None:
         """
@@ -55,6 +56,7 @@ class Greenhouse(object, metaclass=Singleton):
         """
         self.sensors = sensors
         self.current_state = Environment()
+        self.desired_state = EnvironmentGoal()
         self.remote_data_store = remote_store
         climate_file_name = os.path.join(
             os.path.dirname(__file__),
@@ -104,7 +106,6 @@ class Greenhouse(object, metaclass=Singleton):
         self.log.debug("At time: %s , The current pattern is: %s",
                        time.time() - self.start_time + self.time_offset,
                        pattern)
-        self.desired_state = EnvironmentGoal()
         self.desired_state.update(pattern)
         # self.log.debug("The desired state is now set as: %s", self.desired_state)
         self.control.set_environment(self.desired_state)
@@ -113,17 +114,17 @@ class Greenhouse(object, metaclass=Singleton):
         # self.pattern['operations'] is the actual grow parameters
         # it is a list of 'stages' of growth parameters
 
-        elasped_time = time.time() - self.start_time + self.time_offset
+        self.elapsed_time = time.time() - self.start_time + self.time_offset
         DAY, NIGHT = 'day', 'night'
         current_stage = 0
         current_cycle = 0
         current_day_night = DAY
 
         end_time_of_cycle = 0
-        while elasped_time > end_time_of_cycle:
+        while self.elapsed_time > end_time_of_cycle:
             end_time_of_cycle += self.pattern['operations'][current_stage][current_day_night]['hours'] * 3600
             # 3600 for hours to seconds conversion
-            if elasped_time <= end_time_of_cycle:
+            if self.elapsed_time <= end_time_of_cycle:
                 return self.pattern['operations'][current_stage][current_day_night]['environment']
 
             # Alternate between day and night
@@ -149,7 +150,7 @@ class Greenhouse(object, metaclass=Singleton):
             if newest_timestamp:  # This checks if there even is a newer timestamp
                 setattr(self.current_state, sensor, new_statues[newest_timestamp])
 
-        self.log.debug(self.current_state)
+        self.log.debug("The current state of the farm is: %s", self.current_state)
 
     # TODO this
     def _push_state(self, sensor: str, timestamp: str, status: str):

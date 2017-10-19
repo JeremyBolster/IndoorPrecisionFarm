@@ -70,9 +70,12 @@ class RestEndpoint(object):
         This endpoint returns the current status of the greenhouse. This includes the progress and time remaining
         of the climate pattern. It also displays any recoverable errors that have recently been caught.
         """
-        # TODO this
+        greenhouse = Greenhouse()
         return json.dumps({
-            'message': '',
+            'message': {
+                'desired state': greenhouse.desired_state.to_json(),
+                'elapsed time': greenhouse.elapsed_time
+            },
             'success': True
         }), 200
 
