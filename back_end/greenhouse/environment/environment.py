@@ -1,7 +1,6 @@
 from back_end.configuration import Config
 
 import logging
-import json
 
 
 class Environment(object):

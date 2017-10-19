@@ -2,6 +2,7 @@ from back_end.configuration import Config
 from back_end.databases.time_series_database_connection import TSDataBaseConnector
 from back_end.greenhouse.communication.communication import Communication
 from back_end.greenhouse.environment.environment import Environment
+from back_end.greenhouse.environment.environment_goal import EnvironmentGoal
 from back_end.greenhouse.environment.environmental_control import EnvironmentalControl
 from threading import Thread
 import time
@@ -35,16 +36,19 @@ class Greenhouse(object, metaclass=Singleton):
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
         self.sensors = None
+        self.desired_state = None
         self.current_state = None
         self.remote_data_store = None
         self.pattern = None
         self.control = None
         self.running = False
+        self.start_time = 0
+        self.time_offset = 0
 
     def setup(self, sensors: Communication, climate_pattern: str, remote_store: TSDataBaseConnector=None) -> None:
         """
         This method sets the values of the greenhouse.
-        :param greenhouse: The device that represents the sensors and devices of the physical greenhouse.
+        :param sensors: The device that represents the sensors and devices of the physical greenhouse.
         :param climate_pattern: A file of a climate pattern to load and execute.
         :param remote_store: The remote database to push metrics to.
         :return:
@@ -61,7 +65,7 @@ class Greenhouse(object, metaclass=Singleton):
         with open(climate_file_name) as f:
             self.pattern = yaml.safe_load(f.read())
         # TODO set the current state of the greenhouse to the desired state at the beginning
-        self.control = EnvironmentalControl(self.sensors, self.current_state)
+        self.control: EnvironmentalControl = EnvironmentalControl(self.sensors, self.current_state)
 
     def run(self) -> None:
         """
@@ -81,6 +85,7 @@ class Greenhouse(object, metaclass=Singleton):
         :return:
         """
         self.log.info('Running greenhouse')
+        self.start_time = time.time()
         # TODO loop to create a new desired state of the greenhouse
         # TODO loop to update the environmental_control class with the new desired state of the greenhouse
         while True:
@@ -90,8 +95,48 @@ class Greenhouse(object, metaclass=Singleton):
 
     def _update_desired_state(self):
         # TODO make this update the actual state of the greenhouse
-        # self.log.info(yaml.dump(self.pattern, indent=2))
-        pass
+        try:
+            pattern = self._get_current_params()
+        except IndexError:
+            # TODO this means the farm has finished processing the pattern
+            # Not sure what to do here
+            self.log.warning('The farm has finished executing the current pattern')
+        self.log.debug("At time: %s , The current pattern is: %s",
+                       time.time() - self.start_time + self.time_offset,
+                       pattern)
+        self.desired_state = EnvironmentGoal()
+        self.desired_state.update(pattern)
+        # self.log.debug("The desired state is now set as: %s", self.desired_state)
+        self.control.set_environment(self.desired_state)
+
+    def _get_current_params(self):
+        # self.pattern['operations'] is the actual grow parameters
+        # it is a list of 'stages' of growth parameters
+
+        elasped_time = time.time() - self.start_time + self.time_offset
+        DAY, NIGHT = 'day', 'night'
+        current_stage = 0
+        current_cycle = 0
+        current_day_night = DAY
+
+        end_time_of_cycle = 0
+        while elasped_time > end_time_of_cycle:
+            end_time_of_cycle += self.pattern['operations'][current_stage][current_day_night]['hours'] * 3600
+            # 3600 for hours to seconds conversion
+            if elasped_time <= end_time_of_cycle:
+                return self.pattern['operations'][current_stage][current_day_night]['environment']
+
+            # Alternate between day and night
+            if current_day_night in DAY:
+                current_day_night = NIGHT
+            else:
+                current_day_night = DAY
+                current_cycle += 1
+
+            # Skip to the next stage if the current has already completed all of its cycles
+            if current_cycle == self.pattern['operations'][current_stage]['cycles']:
+                current_cycle = 0
+                current_stage += 1
 
     def _get_sensor_data(self):
         for sensor in self.config['sensorList']:

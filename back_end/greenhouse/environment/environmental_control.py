@@ -105,9 +105,9 @@ class EnvironmentalControl(object):
         self.greenhouse.send_msg('increase_c02', co2)
 
     def _lighting(self, desired):
-        # TODO this will probably flicker horribly
-        current = self.greenhouse_status.lux
-        lights, _ = self._on_off(current, desired)
+        lights = OFF
+        if desired:
+            lights = ON
         self.greenhouse.send_msg('lights', lights)
 
     def _humidity(self, desired):
@@ -118,6 +118,9 @@ class EnvironmentalControl(object):
 
     @staticmethod
     def _on_off(current, desired):
+        if not current and not desired:
+            # This covers the issue of certain values not being implemented.
+            return OFF, OFF
         one = OFF
         two = OFF
         if current < desired:  # TODO add tolerance

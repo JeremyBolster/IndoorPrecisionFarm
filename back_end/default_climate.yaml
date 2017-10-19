@@ -11,7 +11,7 @@ operations:
 - cycles: 2
   name: early
   day:
-    hours: 0.001
+    hours: 0.01
     environment:
       waterTemp: 24
       lux: 1200
@@ -20,7 +20,7 @@ operations:
       airTemp: 25
       co2: 1000
   night:
-    hours: 0.001
+    hours: 0.01
     environment:
       waterTemp: 23
       lux: 0
