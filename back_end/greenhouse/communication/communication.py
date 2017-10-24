@@ -1,6 +1,6 @@
 import logging
 from back_end.configuration import Config
-from typing import Dict, Any
+from typing import Dict, List
 
 ON, OFF = 'ON', 'OFF'
 
@@ -16,8 +16,11 @@ class Communication(object):
         self.config = Config.config
         self.sensor_list = self.config['sensorList']
 
-    def send_msg(self, device: str, msg: str) -> bool:
+    def send_msg(self, msg: List[str]) -> bool:
         raise NotImplementedError
 
     def receive_msg(self, device: str) -> Dict[float, float]:
+        raise NotImplementedError
+
+    def toggle_device(self, device: str, msg: str) -> bool:
         raise NotImplementedError

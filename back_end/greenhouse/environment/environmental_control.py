@@ -73,48 +73,48 @@ class EnvironmentalControl(object):
     def _water_temp(self, desired):
         current = self.greenhouse_status.water_temp
         water_heater, water_cooler = self._on_off(current, desired)
-        self.greenhouse.send_msg('water_heater', water_heater)
-        self.greenhouse.send_msg('water_cooler', water_cooler)
+        self.greenhouse.toggle_device('water_heater', water_heater)
+        self.greenhouse.toggle_device('water_cooler', water_cooler)
 
     def _ph(self, desired):
         current = self.greenhouse_status.pH
         ph_up, ph_down = self._on_off(current, desired)
-        self.greenhouse.send_msg('ph_up', ph_up)
-        self.greenhouse.send_msg('ph_down', ph_down)
+        self.greenhouse.toggle_device('ph_up', ph_up)
+        self.greenhouse.toggle_device('ph_down', ph_down)
 
     def _soil_moisture(self, desired):
         current = self.greenhouse_status.soil_moisture
         water, _ = self._on_off(current, desired)
-        self.greenhouse.send_msg('water_soil', water)
+        self.greenhouse.toggle_device('water_soil', water)
 
     def _air_temp(self, desired):
         current = self.greenhouse_status.air_temp
         air_heater, air_cooler = self._on_off(current, desired)
-        self.greenhouse.send_msg('air_heater', air_heater)
-        self.greenhouse.send_msg('air_cooler', air_cooler)
+        self.greenhouse.toggle_device('air_heater', air_heater)
+        self.greenhouse.toggle_device('air_cooler', air_cooler)
 
     def _circulation(self, desired):
         if desired:
-            self.greenhouse.send_msg('circulation_fan', ON)
+            self.greenhouse.toggle_device('circulation_fan', ON)
         else:
-            self.greenhouse.send_msg('circulation_fan', OFF)
+            self.greenhouse.toggle_device('circulation_fan', OFF)
 
     def _co2(self, desired):
         current = self.greenhouse_status.co2
         co2, _ = self._on_off(current, desired)
-        self.greenhouse.send_msg('increase_c02', co2)
+        self.greenhouse.toggle_device('increase_c02', co2)
 
     def _lighting(self, desired):
         lights = OFF
         if desired:
             lights = ON
-        self.greenhouse.send_msg('lights', lights)
+        self.greenhouse.toggle_device('lights', lights)
 
     def _humidity(self, desired):
         current = self.greenhouse_status.humidity
         humidifier, dehumidifier = self._on_off(current, desired)
-        self.greenhouse.send_msg('humidifier', humidifier)
-        self.greenhouse.send_msg('dehumidifier', dehumidifier)
+        self.greenhouse.toggle_device('humidifier', humidifier)
+        self.greenhouse.toggle_device('dehumidifier', dehumidifier)
 
     @staticmethod
     def _on_off(current, desired):

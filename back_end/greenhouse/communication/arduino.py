@@ -4,7 +4,7 @@ import collections
 import time
 import threading
 from threading import Thread
-from typing import Dict, Any
+from typing import Dict, List
 from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
 from serial.tools import list_ports
@@ -56,7 +56,10 @@ class Arduino(Communication):
 
         return arduinos[0]
 
-    def send_msg(self, sensor: str, msg: str) -> bool:
+    def toggle_device(self, device: str, msg: str) -> bool:
+        return self.send_msg(['toggleDevice', device, msg])
+
+    def send_msg(self, msg: List[str]) -> bool:
         """
         This method sends a message as a command to the specified sensor. It returns a boolean representing whether it
         was successful or not.
@@ -65,7 +68,7 @@ class Arduino(Communication):
         :return: Success status of the message
         """
         with self.lock:
-            self.cmd.send(sensor, msg)
+            self.cmd.send(tuple(msg))
             return_msg = self.cmd.receive()
         assert return_msg[1][0] == msg
         # TODO something smarter with this in case of error

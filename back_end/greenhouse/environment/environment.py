@@ -1,4 +1,5 @@
 from back_end.configuration import Config
+from back_end.greenhouse.communication.communication import ON, OFF
 
 import logging
 
@@ -16,25 +17,25 @@ class Environment(object):
         self.pH = None
         self.soil_moisture = None
         self.air_temp = None
-        self.circulation = None
         self.co2 = None
         self.lux = None
         self.humidity = None
+
+        self.humidifier = OFF
+        self.light = OFF
+        self.heater = OFF
+        self.air_conditioner = OFF
+        self.circulation = OFF
 
     def __str__(self):
         return str(self.to_json())
 
     def to_json(self):
-        return {
-            'water_temp': self.water_temp,
-            'pH': self.pH,
-            'soil_moisture': self.soil_moisture,
-            'air_temp': self.air_temp,
-            'circulation': self.circulation,
-            'co2': self.co2,
-            'lux': self.lux,
-            'humidity': self.humidity
-        }
+        output = {}
+        for item, value in self.__dict__.items():
+            if value:
+                output.setdefault(item, value)
+        return output
 
     def setup(self,
               soil: bool=False,
@@ -64,3 +65,18 @@ class Environment(object):
 
         if hydroponic:
             self.water_temp = water_temp
+
+    def update(self, pattern: dict)-> None:
+        for key, value in pattern.items():
+
+            # Hard-coding for compatability with MIT Food Computer Recipes
+            if key in 'waterTemp':
+                self.water_temp = value
+                continue
+            if key in 'airTemp':
+                self.air_temp = value
+                continue
+            self.__setattr__(key, value)
+            self.soil_moisture = None
+            self.circulation = None
+

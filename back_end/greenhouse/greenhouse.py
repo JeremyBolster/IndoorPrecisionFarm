@@ -2,7 +2,6 @@ from back_end.configuration import Config
 from back_end.databases.time_series_database_connection import TSDataBaseConnector
 from back_end.greenhouse.communication.communication import Communication
 from back_end.greenhouse.environment.environment import Environment
-from back_end.greenhouse.environment.environment_goal import EnvironmentGoal
 from back_end.greenhouse.environment.environmental_control import EnvironmentalControl
 from threading import Thread
 import time
@@ -56,7 +55,7 @@ class Greenhouse(object, metaclass=Singleton):
         """
         self.sensors = sensors
         self.current_state = Environment()
-        self.desired_state = EnvironmentGoal()
+        self.desired_state = Environment()
         self.remote_data_store = remote_store
         climate_file_name = os.path.join(
             os.path.dirname(__file__),
