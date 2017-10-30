@@ -11,6 +11,9 @@ influxdb:
   password: 'greenhouse'
   host: 'localhost'
 communication:
+  devicePins:
+    heater: 0
+    circulation: 1
   arduinoCommands:
     -
       - sensorValue
@@ -20,7 +23,7 @@ communication:
       - ""
     -
       - toggleDevice
-      - ss
+      - i?
     -
       - poll
       - ""

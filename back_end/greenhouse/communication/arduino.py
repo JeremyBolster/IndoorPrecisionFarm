@@ -4,7 +4,7 @@ import collections
 import time
 import threading
 from threading import Thread
-from typing import Dict, List
+from typing import Dict, List, Any
 from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
 from serial.tools import list_ports
@@ -26,12 +26,13 @@ class Arduino(Communication):
         self.log.setLevel(logging.DEBUG)
         self.cmd = None
         self.devices = collections.defaultdict(lambda: {})
+        self.config = Config.config['communication']
         self.initialize_arduino()
 
     def initialize_arduino(self):
         # TODO error checking
         arduino = PyCmdMessenger.ArduinoBoard(self.find_arduino(), baud_rate=9600)
-        self.cmd = PyCmdMessenger.CmdMessenger(arduino, Config.config['communication']['arduinoCommands'])
+        self.cmd = PyCmdMessenger.CmdMessenger(arduino, self.config['arduinoCommands'])
         th = Thread(target=self._poll_sensors)
         th.daemon = True
         th.start()
@@ -57,13 +58,17 @@ class Arduino(Communication):
         return arduinos[0]
 
     def toggle_device(self, device: str, msg: str) -> bool:
-        return self.send_msg(['toggleDevice', device, msg])
+        device_pin = self.config['devicePins'][device]
+        if 'ON' in msg:
+            status = True
+        else:  # OFF
+            status = False
+        return self.send_msg(['toggleDevice', device_pin, status])
 
-    def send_msg(self, msg: List[str]) -> bool:
+    def send_msg(self, msg: List[Any]) -> bool:
         """
         This method sends a message as a command to the specified sensor. It returns a boolean representing whether it
         was successful or not.
-        :param sensor: Name of the sensor
         :param msg: Message to send to the sensor
         :return: Success status of the message
         """

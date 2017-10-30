@@ -71,7 +71,7 @@ class Environment(object):
     def update(self, pattern: dict)-> None:
         for key, value in pattern.items():
 
-            # Hard-coding for compatability with MIT Food Computer Recipes
+            # Hard-coding for compatibility with MIT Food Computer Recipes
             if key in 'waterTemp':
                 self.values['water_temp'] = value
                 continue
