@@ -13,26 +13,28 @@ class Environment(object):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
-        self.water_temp = None
-        self.pH = None
-        self.soil_moisture = None
-        self.air_temp = None
-        self.co2 = None
-        self.lux = None
-        self.humidity = None
+        self.values = dict(
+            water_temp=None,
+            pH=None,
+            soil_moisture=None,
+            air_temp=None,
+            co2=None,
+            lux=None,
+            humidity=None,
 
-        self.humidifier = OFF
-        self.light = OFF
-        self.heater = OFF
-        self.air_conditioner = OFF
-        self.circulation = OFF
+            humidifier=OFF,
+            light=OFF,
+            heater=OFF,
+            air_conditioner=OFF,
+            circulation=OFF
+        )
 
     def __str__(self):
         return str(self.to_json())
 
     def to_json(self):
         output = {}
-        for item, value in self.__dict__.items():
+        for item, value in self.values.items():
             if value:
                 output.setdefault(item, value)
         return output
@@ -53,30 +55,27 @@ class Environment(object):
             self.log.error('Only one of soil or hydroponic type may be specified for a given environment.')
             raise AttributeError('Only one of soil or hydroponic type may be specified for a given environment.')
 
-        self.pH = ph
-        self.air_temp = air_temp
-        self.circulation = circulation
-        self.co2 = co2
-        self.lux = light_level
-        self.humidity = humidity
+        self.values['pH'] = ph
+        self.values['air_temp'] = air_temp
+        self.values['circulation'] = circulation
+        self.values['co2'] = co2
+        self.values['lux'] = light_level
+        self.values['humidity'] = humidity
 
         if soil:
-            self.soil_moisture = soil_moisture
+            self.values['soil_moisture'] = soil_moisture
 
         if hydroponic:
-            self.water_temp = water_temp
+            self.values['water_temp'] = water_temp
 
     def update(self, pattern: dict)-> None:
         for key, value in pattern.items():
 
             # Hard-coding for compatability with MIT Food Computer Recipes
             if key in 'waterTemp':
-                self.water_temp = value
+                self.values['water_temp'] = value
                 continue
             if key in 'airTemp':
-                self.air_temp = value
+                self.values['air_temp'] = value
                 continue
-            self.__setattr__(key, value)
-            self.soil_moisture = None
-            self.circulation = None
-
+            self.values[key] = value

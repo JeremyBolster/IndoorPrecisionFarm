@@ -28,4 +28,4 @@ class ArduinoSimulated(Communication):
         return device_to_generic_output[device]
 
     def toggle_device(self, device: str, msg: str) -> bool:
-        raise True
+        return True
