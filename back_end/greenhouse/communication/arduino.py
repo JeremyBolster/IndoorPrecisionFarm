@@ -73,11 +73,8 @@ class Arduino(Communication):
         :return: Success status of the message
         """
         with self.lock:
-            self.cmd.send(tuple(msg))
-            return_msg = self.cmd.receive()
-        assert return_msg[1][0] == msg
-        # TODO something smarter with this in case of error
-        return 'success' == return_msg[1][1]
+            self.cmd.send(*msg)
+        return True
 
     def receive_msg(self, device: str) -> Dict[float, float]:
         """
@@ -104,23 +101,27 @@ class Arduino(Communication):
     def _receive_sensor_poll(self)->bool:
         with self.lock:
             msg = self.cmd.receive()
-        if msg:
-            self.log.log(5, 'Received message from Arduino: %s', str(msg))
-            message_type = msg[0]
-            device = msg[1][0]
-            value = msg[1][1]
-            time_received = msg[2]
+        try:
+            if msg:
+                self.log.log(5, 'Received message from Arduino: %s', str(msg))
+                message_type = msg[0]
+                device = msg[1][0]
+                value = msg[1][1]
+                time_received = msg[2]
 
-            if message_type not in 'sensorValue':
-                # TODO do something more sensible with this error
-                self.log.error('Bad message type received by sensor polling util. %s', message_type)
-                raise AttributeError
+                if message_type not in 'sensorValue':
+                    # TODO do something more sensible with this error
+                    self.log.error('Bad message type received by sensor polling util. %s', message_type)
+                    raise AttributeError
 
-            if device in 'null':
+                if device in 'null':
+                    return FAILURE
+                with self.lock:
+                    device_values = self.devices[device]
+                    device_values[time_received] = value
+                    return SUCCESS
+            else:
                 return FAILURE
-            with self.lock:
-                device_values = self.devices[device]
-                device_values[time_received] = value
-                return SUCCESS
-        else:
+        except Exception:
+            self.log.debug("Message received was unexpected: %s", msg)
             return FAILURE

@@ -76,12 +76,14 @@ WSGI_APPLICATION = 'front_end.wsgi.application'
 
 DATABASES = {
     'default': dict(
-        ENGINE='django.db.backends.postgresql',
-        NAME=os.getenv('DB_NAME', 'greenhouse'),
-        USER=os.getenv('DB_USER', 'greenhouse'),
-        PASSWORD=os.getenv('DB_PASSWORD', 'greenhouse'),
-        HOST=os.getenv('DB_HOST', 'localhost'),
-        PORT=os.getenv('DB_PORT', '5432'),)
+        ENGINE='django.db.backends.sqlite3',
+        NAME='mydb')
+        # ENGINE='django.db.backends.postgresql',
+        # NAME=os.getenv('DB_NAME', 'greenhouse'),
+        # USER=os.getenv('DB_USER', 'greenhouse'),
+        # PASSWORD=os.getenv('DB_PASSWORD', 'greenhouse'),
+        # HOST=os.getenv('DB_HOST', 'localhost'),
+        # PORT=os.getenv('DB_PORT', '5432'),)
 }
 
 

@@ -147,7 +147,7 @@ class Greenhouse(object, metaclass=Singleton):
                 if int(timestamp) > int(newest_timestamp):
                     newest_timestamp = timestamp
             if newest_timestamp:  # This checks if there even is a newer timestamp
-                setattr(self.current_state, sensor, new_statues[newest_timestamp])
+                self.current_state.values[sensor] = float(new_statues[newest_timestamp])
 
         self.log.debug("The current state of the farm is: %s", self.current_state)
 

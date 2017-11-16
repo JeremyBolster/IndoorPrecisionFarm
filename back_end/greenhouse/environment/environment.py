@@ -22,11 +22,18 @@ class Environment(object):
             lux=None,
             humidity=None,
 
-            humidifier=OFF,
-            light=OFF,
-            heater=OFF,
-            air_conditioner=OFF,
-            circulation=OFF
+            air_heater=None,
+            air_cooler=None,
+            water_heater=None,
+            water_cooler=None,
+            ph_up=None,
+            ph_down=None,
+            water_soil=None,
+            circulation_fan=None,
+            increase_c02=None,
+            lights=None,
+            humidifier=None,
+            dehumidifier=None
         )
 
     def __str__(self):

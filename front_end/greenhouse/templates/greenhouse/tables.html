@@ -1,0 +1,56 @@
+{% extends "greenhouse/base_html.html" %}
+{% load static %}
+{% block body %}
+
+<body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  {% include "greenhouse/navbar.html" %}
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <div class="card mb-3">
+                <div class="card-header">
+                    <i class="fa fa-table"></i> Farm XYZ status
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                            <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Current</th>
+                                <th>Desired</th>
+                            </tr>
+                            </thead>
+                            <tfoot>
+                            <tr>
+                                <th>Name</th>
+                                <th>Current</th>
+                                <th>Desired</th>
+                            </tr>
+                            </tfoot>
+                            <tbody>
+                            <tr>
+                                <td>Air Temperature</td>
+                                <td>20.3°C</td>
+                                <td>20.0°C</td>
+                            </tr>
+                            <tr>
+                                <td>Water Temperature</td>
+                                <td>22.0°C</td>
+                                <td>21.0°C</td>
+                            </tr>
+                            <tr>
+                                <td>Humidity</td>
+                                <td>30%</td>
+                                <td>75%</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <!-- TODO make this updated at dynamic -->
+                <div class="card-footer small text-muted">Updated yesterday at 11:59 PM</div>
+            </div>
+    </div>
+  </div>
+</body>
+{% endblock %}
