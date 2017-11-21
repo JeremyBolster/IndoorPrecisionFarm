@@ -1,4 +1,5 @@
 from back_end.configuration import Config
+import time
 from back_end.greenhouse.communication.communication import ON, OFF
 
 import logging
@@ -13,6 +14,7 @@ class Environment(object):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
+        self.current_time = time.time()
         self.values = dict(
             water_temp=None,
             pH=None,
@@ -44,6 +46,8 @@ class Environment(object):
         for item, value in self.values.items():
             if value:
                 output.setdefault(item, value)
+
+        output.setdefault('current_time', int(self.current_time))
         return output
 
     def setup(self,

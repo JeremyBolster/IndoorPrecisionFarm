@@ -31,7 +31,7 @@ def run(device, pattern):
     # TODO do something with the device
     # TODO we should while true this I guess
     rest = RestEndpoint()
-    th = Thread(target=rest.app.run, args=['0.0.0.0', 8000])
+    th = Thread(target=rest.app.run, args=['0.0.0.0', 8001])
     th.daemon = True
     th.start()
     greenhouse = Greenhouse()
@@ -41,7 +41,8 @@ def run(device, pattern):
         com_dev = Arduino()
     greenhouse.setup(com_dev, pattern)
     greenhouse.run()
-    time.sleep(90)
+    while True:
+        time.sleep(10)
 
 
 @cli.command('check-db')
