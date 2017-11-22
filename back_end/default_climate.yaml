@@ -31,7 +31,7 @@ operations:
 - cycles: 2
   name: middle
   day:
-    hours: 0.001
+    hours: 10
     environment:
       waterTemp: 24
       lux: 1200
@@ -40,7 +40,7 @@ operations:
       airTemp: 25
       co2: 1000
   night:
-    hours: 0.001
+    hours: 5
     environment:
       waterTemp: 23
       lux: 0

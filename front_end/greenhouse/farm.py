@@ -11,6 +11,7 @@ class Farm(object):
     farm_data = []
     farm_data_cache = {}
     last_update = time.time()
+    query_in_progress = False
 
     def __init__(self):
         pass
@@ -22,9 +23,10 @@ def query_farms() -> dict:
         load_config()
         
     # Time to update the cache
-    if time.time() < Farm.last_update + CACHE_TIMEOUT:
+    if time.time() < Farm.last_update + CACHE_TIMEOUT or Farm.query_in_progress:
         return Farm.farm_data_cache
 
+    Farm.query_in_progress = True
     new_data = []
     for farm in Farm.farm_data:
         # {'name': 'Test Farm 1', 'url': 'http://127.0.0.1:8001'}
@@ -38,6 +40,7 @@ def query_farms() -> dict:
 
     Farm.last_update = time.time()
     Farm.farm_data_cache = {'farms': new_data}
+    Farm.query_in_progress = False
     return Farm.farm_data_cache
 
     

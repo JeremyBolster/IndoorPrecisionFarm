@@ -73,8 +73,8 @@ class RestEndpoint(object):
         greenhouse = Greenhouse()
         return json.dumps({
             'message': {
-                'desired state': greenhouse.desired_state.to_json(),
-                'elapsed time': int(greenhouse.elapsed_time)
+                'desired_state': greenhouse.desired_state.to_json(),
+                'elapsed_time': int(greenhouse.elapsed_time)
             },
             'success': True
         }), 200

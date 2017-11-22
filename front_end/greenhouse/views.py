@@ -7,4 +7,4 @@ def index(request):
 
 
 def greenhouse(request):
-    return render(request, 'greenhouse/'+request.get_full_path())
+    return render(request, 'greenhouse/'+request.get_full_path(), query_farms())
