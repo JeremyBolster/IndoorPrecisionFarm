@@ -124,3 +124,6 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
+MEDIA_URL = '/media/'
+ENV_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__) + '/../greenhouse'))
+MEDIA_ROOT = os.path.join(ENV_PATH, 'media/')

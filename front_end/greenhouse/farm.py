@@ -51,8 +51,21 @@ def check_success(consumable: dict) -> bool:
         return False
 
 
+def consume_image(url: str) -> str:
+    """
+    This method consumes an image from a farm.
+    :param url: The base url of the farm to query.
+    :return: The name of the file which was saved to MEDIA_ROOT
+    """
+    # TODO this should check the last time an image was grabbed and only grab a new one if it was changed.
+    # TODO implement basic functionality
+    consumable = requests.get(url + '/api/v1/image').json()
+    return ''
+
+
+
 def consume_status(url: str) -> dict:
-    consumable = requests.get(url + '/status').json()
+    consumable = requests.get(url + '/api/v1/status').json()
     if check_success(consumable):
         message = consumable['message']
         return message
@@ -76,7 +89,7 @@ def consume_status(url: str) -> dict:
 
 
 def consume_climate(url: str) -> dict:
-    consumable = requests.get(url+'/climate').json()
+    consumable = requests.get(url+'/api/v1/climate').json()
     if check_success(consumable):
         message = consumable['message']
         message['last_resolved'] = int(time.time() - message['current_time'])
