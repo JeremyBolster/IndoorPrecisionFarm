@@ -30,8 +30,7 @@ class EnvironmentalControl(object):
 
     def set_environment(self, desired_environment: Environment) -> None:
         """
-        This is the main function of this class. This function takes a given environment and applies it to its assigned
-        communication device / farm.
+        This function safely updates the reference to the most recent sensor values from the farm.
         :param desired_environment: A desired environment to create
         :return: None
         """
@@ -40,94 +39,50 @@ class EnvironmentalControl(object):
 
     def _set_environment(self) -> None:
         """
-        This function updates the environment to whatever value is
-        :return: None
+        This function is an infinite loop runnable to continue toggling the farm's devices to always try and meet the
+        desired environmental state.
         """
+        last_update_time = time.time()
         while True:
-            time.sleep(REFRESH_INTERVAL)
-            th = Thread()
+            # The 'math' in the next line keeps the refresh intervals more regular since the update takes time to
+            # complete.
+            time.sleep(REFRESH_INTERVAL - (time.time() - last_update_time))  # REFRESH_INTERVAL - ELAPSED_TIME
+            last_update_time = time.time()
             with self.lock:
                 if self.desired_environment:
-                    # By passing environment as a reference we can let this call be threaded, thus releasing the lock
-                    th = Thread(target=self._update_environment, args=[self.desired_environment])
-            th.daemon = True
-            th.start()
-            th.join()
+                    self._update_environment(self.desired_environment)
 
     def _update_environment(self, environment: Environment) -> None:
         """
-        This is a function that takes the current desired environment and applies it to this objects assigned
-        farm.
+        This is a function that takes the current desired environment and applies it to this objects assigned farm.
         :param environment: The desired environment
-        :return: None
         """
-        self._water_temp(environment.values['water_temp'])  # only works if hydroponic
-        self._ph(environment.values['pH'])  # Handles either soil or water ph
-        self._soil_moisture(environment.values['soil_moisture'])  # only works if soil based
-        self._air_temp(environment.values['air_temp'])
-        self._circulation(environment.values['circulation_fan'])
-        self._co2(environment.values['co2'])
-        self._lighting(environment.values['lux'])
-        self._humidity(environment.values['humidity'])
+        e_vals, f_vals = environment.values, self.farm_status.values
 
-    def _water_temp(self, desired):
-        current = self.farm_status.values['water_temp']
-        water_heater, water_cooler = self._on_off(current, desired)
-        self.farm.toggle_device('water_heater', water_heater)
-        self.farm.toggle_device('water_cooler', water_cooler)
-        self.farm_status.values['water_cooler'] = water_cooler
-        self.farm_status.values['water_heater'] = water_heater
+        self._generic_update(e_vals, f_vals, 'water_temp', 'water_heater', 'water_cooler')  # only works if hydroponic
+        self._generic_update(e_vals, f_vals, 'pH', 'pH_up', 'pH_down')  # Handles either soil or water ph
+        self._generic_update(e_vals, f_vals, 'air_temp', 'air_heater', 'air_cooler')
+        self._generic_update(e_vals, f_vals, 'co2', 'increase_c02', 'decrease_c02')
+        self._generic_update(e_vals, f_vals, 'humidity', 'humidifier', 'dehumidifier')
+        self._generic_update(e_vals, f_vals, 'soil_moisture', 'water_soil', None)  # only works if soil based
 
-    def _ph(self, desired):
-        current = self.farm_status.values['pH']
-        ph_up, ph_down = self._on_off(current, desired)
-        self.farm.toggle_device('ph_up', ph_up)
-        self.farm.toggle_device('ph_down', ph_down)
-        self.farm_status.values['ph_up'] = ph_up
-        self.farm_status.values['ph_down'] = ph_down
+        self._always_set(environment.values['circulation_fan'], 'circulation_fan')
+        self._always_set(environment.values['lux'], 'lights')
 
-    def _soil_moisture(self, desired):
-        current = self.farm_status.values['soil_moisture']
-        water, _ = self._on_off(current, desired)
-        self.farm.toggle_device('water_soil', water)
-        self.farm_status.values['water_soil'] = water
+    def _generic_update(self, desired, current, name, increase_device_name, decrease_device_name=None):
+        increase, decrease = self._on_off(current[name], desired[name])
+        self.farm.toggle_device(increase_device_name, increase)
+        self.farm_status.values[increase_device_name] = increase
+        if decrease_device_name:
+            self.farm.toggle_device(decrease_device_name, decrease)
+            self.farm_status.values[decrease_device_name] = decrease
 
-    def _air_temp(self, desired):
-        current = self.farm_status.values['air_temp']
-        air_heater, air_cooler = self._on_off(current, desired)
-        self.farm.toggle_device('air_heater', air_heater)
-        self.farm.toggle_device('air_cooler', air_cooler)
-        self.farm_status.values['air_heater'] = air_heater
-        self.farm_status.values['air_cooler'] = air_cooler
-
-    def _circulation(self, desired):
+    def _always_set(self, desired, device_name):
+        status = OFF
         if desired:
             status = ON
-        else:
-            status = OFF
-        self.farm.toggle_device('circulation_fan', status)
-        self.farm_status.values['circulation_fan'] = status
-
-    def _co2(self, desired):
-        current = self.farm_status.values['co2']
-        co2, _ = self._on_off(current, desired)
-        self.farm.toggle_device('increase_c02', co2)
-        self.farm_status.values['increase_c02'] = co2
-
-    def _lighting(self, desired):
-        lights = OFF
-        if desired:
-            lights = ON
-        self.farm.toggle_device('lights', lights)
-        self.farm_status.values['lights'] = lights
-
-    def _humidity(self, desired):
-        current = self.farm_status.values['humidity']
-        humidifier, dehumidifier = self._on_off(current, desired)
-        self.farm.toggle_device('humidifier', humidifier)
-        self.farm.toggle_device('dehumidifier', dehumidifier)
-        self.farm_status.values['humidifier'] = humidifier
-        self.farm_status.values['dehumidifier'] = dehumidifier
+        self.farm.toggle_device(device_name, status)
+        self.farm_status.values[device_name] = status
 
     @staticmethod
     def _on_off(current, desired):

@@ -1,14 +1,11 @@
 from back_end.configuration import Config
-import time
-from back_end.greenhouse.communication.communication import ON, OFF
-
 import logging
 
 
 class Environment(object):
     """
-    This class is a data structure. The main purpose of this class is to encapsulate an environmental state. This state
-    can be either physical or virtual.
+    This class is a data structure. The main purpose of this class is to encapsulate an environmental state.
+    This state can be either physical or virtual.
     """
     def __init__(self):
         self.log = logging.getLogger(self.__class__.__name__)
