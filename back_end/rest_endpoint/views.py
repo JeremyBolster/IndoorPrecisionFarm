@@ -3,10 +3,12 @@ from flask import request
 from flask import send_file
 import json
 from back_end.greenhouse.greenhouse import Greenhouse
+from typing import Tuple
+import os
+from functools import reduce
 
 
 class RestEndpoint(object):
-
     app = Flask(__name__)
 
     def __init__(self):
@@ -37,7 +39,7 @@ class RestEndpoint(object):
                 '/api/v1/pattern/',
                 '/api/v1/status/',
                 '/api/v1/image/'
-                ],
+            ],
             'success': True
         }), 200
 
@@ -91,20 +93,50 @@ class RestEndpoint(object):
         pass
 
     @staticmethod
+    def _get_newest_image_name_and_filepath_and_timestamp(media_dir: str = './media/webcam') -> Tuple[str, str, int]:
+        """
+        This function searches the webcam media directory for the newest webcam snapshot. It naively assumes that the
+        file name will be the timestamp of when it was taken in unix time. If the directory is empty it will raise a
+        FileNotFoundError.
+        :param media_dir: The media directory to search for the webcam snapshots.
+        :return: This function returns a three tuple of: The filename, the absolute filepath, the timestamp from the
+        file
+        """
+        abs_folder_path = os.path.abspath(media_dir)
+        files_list = [f for f in os.listdir(abs_folder_path) if os.path.isfile(os.path.join(abs_folder_path, f))]
+
+        newest_file = \
+            reduce(
+                lambda x, y: x if
+                int(x.split('.')[0]) - max(int(x.split('.')[0]), int(y.split('.')[0])) == 0 else y,
+                files_list, '-1.jpg')
+
+        if newest_file is -1:
+            raise FileNotFoundError
+
+        return newest_file, os.path.join(abs_folder_path, newest_file), int(newest_file.split('.')[0])
+
+    @staticmethod
     @app.route('/api/v1/image/', methods=['GET'])
     def api_v1_image():
-        # TODO last updated should be implemented
+        """
+        This endpoint returns metadata about the most recent image that the farm has taken.
+        """
+        _, _, timestamp = RestEndpoint._get_newest_image_name_and_filepath_and_timestamp()
         return json.dumps({
             'image_url': '/api/vi/image/view',
-            'last_updated': '',
+            'last_updated': timestamp,
             'success': True
         }), 200
 
     @staticmethod
     @app.route('/api/v1/image/view', methods=['GET'])
     def api_v1_img_view():
-        # TODO this should return the most recent image taken
-        return send_file('../media/apple.jpg', mimetype='image/gif'), 200
+        """
+        This endpoint returns the most recent image literal that the farm has taken.
+        """
+        _, newest_filepath, _ = RestEndpoint._get_newest_image_name_and_filepath_and_timestamp()
+        return send_file(newest_filepath, mimetype='image/jpeg'), 200
 
     @staticmethod
     @app.route('/<path:path>')

@@ -12,12 +12,12 @@ REFRESH_INTERVAL = 10
 
 
 class EnvironmentalControl(object):
-    def __init__(self, greenhouse: Communication, status: Environment):
+    def __init__(self, farm: Communication, status: Environment):
         self.log = logging.getLogger(self.__class__.__name__)
         self.log.setLevel(logging.DEBUG)
         self.config = Config.config
-        self.greenhouse = greenhouse
-        self.greenhouse_status = status
+        self.farm = farm
+        self.farm_status = status
         self.desired_environment = None
         self.lock = threading.Lock()
         self.thread = self.set_up_thread()
@@ -31,7 +31,7 @@ class EnvironmentalControl(object):
     def set_environment(self, desired_environment: Environment) -> None:
         """
         This is the main function of this class. This function takes a given environment and applies it to its assigned
-        communication device / greenhouse.
+        communication device / farm.
         :param desired_environment: A desired environment to create
         :return: None
         """
@@ -57,7 +57,7 @@ class EnvironmentalControl(object):
     def _update_environment(self, environment: Environment) -> None:
         """
         This is a function that takes the current desired environment and applies it to this objects assigned
-        greenhouse.
+        farm.
         :param environment: The desired environment
         :return: None
         """
@@ -71,63 +71,63 @@ class EnvironmentalControl(object):
         self._humidity(environment.values['humidity'])
 
     def _water_temp(self, desired):
-        current = self.greenhouse_status.values['water_temp']
+        current = self.farm_status.values['water_temp']
         water_heater, water_cooler = self._on_off(current, desired)
-        self.greenhouse.toggle_device('water_heater', water_heater)
-        self.greenhouse.toggle_device('water_cooler', water_cooler)
-        self.greenhouse_status.values['water_cooler'] = water_cooler
-        self.greenhouse_status.values['water_heater'] = water_heater
+        self.farm.toggle_device('water_heater', water_heater)
+        self.farm.toggle_device('water_cooler', water_cooler)
+        self.farm_status.values['water_cooler'] = water_cooler
+        self.farm_status.values['water_heater'] = water_heater
 
     def _ph(self, desired):
-        current = self.greenhouse_status.values['pH']
+        current = self.farm_status.values['pH']
         ph_up, ph_down = self._on_off(current, desired)
-        self.greenhouse.toggle_device('ph_up', ph_up)
-        self.greenhouse.toggle_device('ph_down', ph_down)
-        self.greenhouse_status.values['ph_up'] = ph_up
-        self.greenhouse_status.values['ph_down'] = ph_down
+        self.farm.toggle_device('ph_up', ph_up)
+        self.farm.toggle_device('ph_down', ph_down)
+        self.farm_status.values['ph_up'] = ph_up
+        self.farm_status.values['ph_down'] = ph_down
 
     def _soil_moisture(self, desired):
-        current = self.greenhouse_status.values['soil_moisture']
+        current = self.farm_status.values['soil_moisture']
         water, _ = self._on_off(current, desired)
-        self.greenhouse.toggle_device('water_soil', water)
-        self.greenhouse_status.values['water_soil'] = water
+        self.farm.toggle_device('water_soil', water)
+        self.farm_status.values['water_soil'] = water
 
     def _air_temp(self, desired):
-        current = self.greenhouse_status.values['air_temp']
+        current = self.farm_status.values['air_temp']
         air_heater, air_cooler = self._on_off(current, desired)
-        self.greenhouse.toggle_device('air_heater', air_heater)
-        self.greenhouse.toggle_device('air_cooler', air_cooler)
-        self.greenhouse_status.values['air_heater'] = air_heater
-        self.greenhouse_status.values['air_cooler'] = air_cooler
+        self.farm.toggle_device('air_heater', air_heater)
+        self.farm.toggle_device('air_cooler', air_cooler)
+        self.farm_status.values['air_heater'] = air_heater
+        self.farm_status.values['air_cooler'] = air_cooler
 
     def _circulation(self, desired):
         if desired:
             status = ON
         else:
             status = OFF
-        self.greenhouse.toggle_device('circulation_fan', status)
-        self.greenhouse_status.values['circulation_fan'] = status
+        self.farm.toggle_device('circulation_fan', status)
+        self.farm_status.values['circulation_fan'] = status
 
     def _co2(self, desired):
-        current = self.greenhouse_status.values['co2']
+        current = self.farm_status.values['co2']
         co2, _ = self._on_off(current, desired)
-        self.greenhouse.toggle_device('increase_c02', co2)
-        self.greenhouse_status.values['increase_c02'] = co2
+        self.farm.toggle_device('increase_c02', co2)
+        self.farm_status.values['increase_c02'] = co2
 
     def _lighting(self, desired):
         lights = OFF
         if desired:
             lights = ON
-        self.greenhouse.toggle_device('lights', lights)
-        self.greenhouse_status.values['lights'] = lights
+        self.farm.toggle_device('lights', lights)
+        self.farm_status.values['lights'] = lights
 
     def _humidity(self, desired):
-        current = self.greenhouse_status.values['humidity']
+        current = self.farm_status.values['humidity']
         humidifier, dehumidifier = self._on_off(current, desired)
-        self.greenhouse.toggle_device('humidifier', humidifier)
-        self.greenhouse.toggle_device('dehumidifier', dehumidifier)
-        self.greenhouse_status.values['humidifier'] = humidifier
-        self.greenhouse_status.values['dehumidifier'] = dehumidifier
+        self.farm.toggle_device('humidifier', humidifier)
+        self.farm.toggle_device('dehumidifier', dehumidifier)
+        self.farm_status.values['humidifier'] = humidifier
+        self.farm_status.values['dehumidifier'] = dehumidifier
 
     @staticmethod
     def _on_off(current, desired):
