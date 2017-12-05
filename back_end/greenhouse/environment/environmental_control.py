@@ -1,12 +1,13 @@
 from back_end.configuration import Config
-from back_end.greenhouse.communication.communication import Communication, ON, OFF
+from back_end.greenhouse.communication import OnOff
+from back_end.greenhouse.communication.communication import Communication
 from back_end.greenhouse.environment.environment import Environment
-
-import threading
-from threading import Thread
 
 import logging
 import time
+import threading
+from threading import Thread
+
 
 REFRESH_INTERVAL = 10
 
@@ -32,7 +33,6 @@ class EnvironmentalControl(object):
         """
         This function safely updates the reference to the most recent sensor values from the farm.
         :param desired_environment: A desired environment to create
-        :return: None
         """
         with self.lock:
             self.desired_environment = desired_environment
@@ -69,30 +69,30 @@ class EnvironmentalControl(object):
         self._always_set(environment.values['circulation_fan'], 'circulation_fan')
         self._always_set(environment.values['lux'], 'lights')
 
-    def _generic_update(self, desired, current, name, increase_device_name, decrease_device_name=None):
+    def _generic_update(self, desired, current, name, increase_device_name, decrease_device_name=None) -> None:
         increase, decrease = self._on_off(current[name], desired[name])
         self.farm.toggle_device(increase_device_name, increase)
-        self.farm_status.values[increase_device_name] = increase
+        self.farm_status.values[increase_device_name] = str(increase)
         if decrease_device_name:
             self.farm.toggle_device(decrease_device_name, decrease)
-            self.farm_status.values[decrease_device_name] = decrease
+            self.farm_status.values[decrease_device_name] = str(decrease)
 
-    def _always_set(self, desired, device_name):
-        status = OFF
+    def _always_set(self, desired, device_name) -> None:
+        status = OnOff()
         if desired:
-            status = ON
+            status.turn_on()
         self.farm.toggle_device(device_name, status)
-        self.farm_status.values[device_name] = status
+        self.farm_status.values[device_name] = str(status)
 
     @staticmethod
     def _on_off(current, desired):
+        one = OnOff()
+        two = OnOff()
         if not current or not desired:
             # This covers the issue of certain values not being implemented.
-            return OFF, OFF
-        one = OFF
-        two = OFF
+            return one, two
         if current < desired:  # TODO add tolerance
-            one = ON
+            one.turn_on()
         elif current > desired:  # TODO add tolerance
-            two = ON
+            two.turn_on()
         return one, two

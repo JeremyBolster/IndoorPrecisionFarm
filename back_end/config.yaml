@@ -1,3 +1,6 @@
+restEndpoint:
+  port: 8001
+  host: '0.0.0.0'
 postgres:
   port: '5432'
   db: 'greenhouse'

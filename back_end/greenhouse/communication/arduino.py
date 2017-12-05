@@ -5,6 +5,7 @@ import time
 import threading
 from threading import Thread
 from typing import Dict, List, Any
+from back_end.greenhouse.communication import OnOff
 from back_end.greenhouse.communication.communication import Communication
 from back_end.configuration import Config
 from serial.tools import list_ports
@@ -57,13 +58,16 @@ class Arduino(Communication):
 
         return arduinos[0]
 
-    def toggle_device(self, device: str, msg: str) -> bool:
+    def toggle_device(self, device: str, on_off: OnOff) -> bool:
+        """
+        This method toggles the specified device to the specified status. It returns the success of the toggle as a
+        boolean.
+        :param device: Name of the device to toggle as a string.
+        :param on_off: Desired status of the device.
+        :return: The success of the toggle.
+        """
         device_pin = self.config['devicePins'][device]
-        if 'ON' in msg:
-            status = True
-        else:  # OFF
-            status = False
-        return self.send_msg(['toggleDevice', device_pin, status])
+        return self.send_msg(['toggleDevice', device_pin, on_off.is_on()])
 
     def send_msg(self, msg: List[Any]) -> bool:
         """

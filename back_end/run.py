@@ -31,7 +31,8 @@ def run(device, pattern):
     # TODO do something with the device
     # TODO we should while true this I guess
     rest = RestEndpoint()
-    th = Thread(target=rest.app.run, args=['0.0.0.0', 8001])
+    rest_config = Config.config['restEndpoint']
+    th = Thread(target=rest.app.run, args=[rest_config['host'], rest_config['port']])
     th.daemon = True
     th.start()
     greenhouse = Greenhouse()
