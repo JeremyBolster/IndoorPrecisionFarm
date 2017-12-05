@@ -93,6 +93,7 @@ class Greenhouse(object, metaclass=Singleton):
             time.sleep(15)  # TODO this is hacky
             self._get_sensor_data()
             self._update_desired_state()
+            self.current_state.current_time = time.time()
 
     def _update_desired_state(self):
         # TODO make this update the actual state of the greenhouse

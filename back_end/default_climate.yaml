@@ -1,12 +1,9 @@
 _id: general_greens
-format: phased
 version: '1.0'
 recipe_format: vector 1.0
 optimization:
 - general purpose
 recipe_name: default basil
-date_created: 1481616000
-recipe_id: ''
 operations:
 - cycles: 2
   name: early
@@ -31,7 +28,7 @@ operations:
 - cycles: 2
   name: middle
   day:
-    hours: 0.001
+    hours: 10
     environment:
       waterTemp: 24
       lux: 1200
@@ -40,7 +37,7 @@ operations:
       airTemp: 25
       co2: 1000
   night:
-    hours: 0.001
+    hours: 5
     environment:
       waterTemp: 23
       lux: 0

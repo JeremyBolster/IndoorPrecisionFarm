@@ -1,0 +1,8 @@
+- name: 'Test Farm 1'
+  url: 'http://127.0.0.1:8001'
+
+- name: 'Test Farm 2'
+  url: 'http://localhost:8001'
+
+- name: 'Test Farm 3'
+  url: 'http://localhost:8001'

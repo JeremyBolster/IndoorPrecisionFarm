@@ -6,78 +6,42 @@
     <div class="content-wrapper">
         <div class="container-fluid">
             <div class="card-columns">
-                <div class="card mb-3">
+                {% for farm in farms %}
+                    <div class="card mb-3">
                     <div class="card-header">
-                        <i class="fa fa-table"></i> Farm XYZ
+                        <i class="fa fa-table"></i> {{ farm.name }}
                     </div>
+                    <!-- TODO this should just make the image fullscreen when tapped -->
                     <a href="#">
-                        <img class="card-img-top img-fluid w-100" src="{% static "plants.jpg" %}"
+                        <img class="card-img-top img-fluid w-100" src="/media/plants{{ forloop.counter }}.jpg"
                              alt="">
                     </a>
                     <div class="card-body">
-                        <h6 class="card-title mb-1"><a href="#">Farm XYZ</a></h6>
+                        <!-- TODO something with this text? -->
+                        <!-- TODO this farm name should do something when clicked if it is clickable -->
+                        <h6 class="card-title mb-1"><a href="#">{{ farm.name }}</a></h6>
                         <p class="card-text small">These plants are looking nice and healthy!
                             <a href="#">#localGrow</a>
                         </p>
                     </div>
                     <hr class="my-0">
                     <div class="card-body py-2 small">
+                        <!-- TODO this progress bar should be dynamic -->
                         <div class="progress">
                             <div class="progress-bar bg-success" style="width:70%">70%</div>
                         </div>
                     </div>
                     <hr class="my-0">
-                    <!-- TODO make this updated at dynamic -->
-                    <div class="card-footer small text-muted">Updated 32 mins ago</div>
+                    <div class="card-footer small text-muted">
+                        {% if farm.climate.last_resolved < 100 %}
+                            Updated {{ farm.climate.last_resolved }} seconds ago
+                        {% else %}
+                            Updated {% widthratio farm.climate.last_resolved 60 1 %} minutes ago
+                        {% endif %}
+
+                    </div>
                 </div>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fa fa-table"></i> Farm ZYX
-                    </div>
-                    <a href="#">
-                        <img class="card-img-top img-fluid w-100" src="{% static "plants2.jpg" %}"
-                             alt="">
-                    </a>
-                    <div class="card-body">
-                        <h6 class="card-title mb-1"><a href="#">Farm ZYX</a></h6>
-                        <p class="card-text small">These plants are looking nice and healthy!
-                            <a href="#">#localGrow</a>
-                        </p>
-                    </div>
-                    <hr class="my-0">
-                    <div class="card-body py-2 small">
-                        <div class="progress">
-                            <div class="progress-bar bg-success" style="width:43%">43%</div>
-                        </div>
-                    </div>
-                    <hr class="my-0">
-                    <!-- TODO make this updated at dynamic -->
-                    <div class="card-footer small text-muted">Updated 47 mins ago</div>
-                </div>
-                <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fa fa-table"></i> Farm ABC
-                    </div>
-                    <a href="#">
-                        <img class="card-img-top img-fluid w-100" src="{% static "plants3.jpg" %}"
-                             alt="">
-                    </a>
-                    <div class="card-body">
-                        <h6 class="card-title mb-1"><a href="#">Farm XYZ</a></h6>
-                        <p class="card-text small">These plants are looking nice and healthy!
-                            <a href="#">#localGrow</a>
-                        </p>
-                    </div>
-                    <hr class="my-0">
-                    <div class="card-body py-2 small">
-                        <div class="progress">
-                            <div class="progress-bar bg-success" style="width:20%">20%</div>
-                        </div>
-                    </div>
-                    <hr class="my-0">
-                    <!-- TODO make this updated at dynamic -->
-                    <div class="card-footer small text-muted">Updated 10 mins ago</div>
-                </div>
+                {% endfor %}
             </div>
         </div>
     </div>
