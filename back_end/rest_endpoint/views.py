@@ -19,6 +19,7 @@ class RestEndpoint(object):
     def root():
         return json.dumps({
             'message': 'This is a UNBC precision farm.',
+            'endpoints': ['/api'],
             'success': True
         }), 200
 
@@ -62,15 +63,21 @@ class RestEndpoint(object):
         GET: This endpoint returns the current pattern executing on the farm
         POST: This endpoint allows for the current pattern to be replaced
         """
-        # TODO this
+        greenhouse = Greenhouse()
         if request.method == 'POST':
+            if greenhouse.change_pattern(request.json):
+                greenhouse.pattern = request.json
+                return json.dumps({
+                    'message': 'New Pattern Accepted',
+                    'success': True
+                }), 200
             return json.dumps({
-                'message': 'Not Implemented',
-                'success': True
-            }), 200
+                'message': 'Pattern format is incorrect',
+                'success': False
+            }), 400
         else:
             return json.dumps({
-                'message': 'Not Implemented',
+                'message': greenhouse.pattern,
                 'success': True
             }), 200
 
