@@ -82,7 +82,7 @@ class RestEndpoint(object):
             }), 200
 
     @staticmethod
-    @app.route('/api/v1/status/', methods=['GET'])
+    @app.route('/api/v1/status/', methods=['GET', 'POST'])
     def api_v1_status():
         """
         This endpoint returns various reporting information. Examples of this are:
@@ -90,10 +90,21 @@ class RestEndpoint(object):
         :return:
         """
         greenhouse = Greenhouse()  # Greenhouse is a singleton
+        if request.method == 'POST':
+            if 'time_offset' in request.json and greenhouse.offset_time(request.json['time_offset']):
+                return json.dumps({
+                    'message': 'Offset updated by' + str(request.json['time_offset']),
+                    'success': True
+                }), 200
+            return json.dumps({
+                'message': 'The POSTed data is incorrect.',
+                'success': False
+            }), 400
         return json.dumps({
             'message': {
                 'desired_state': greenhouse.desired_state.to_json(),
-                'elapsed_time': int(greenhouse.elapsed_time)
+                'elapsed_time': int(greenhouse.elapsed_time),
+                'start_time': int(greenhouse.start_time)
             },
             'success': True
         }), 200

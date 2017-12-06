@@ -147,6 +147,21 @@ class Greenhouse(object, metaclass=Singleton):
 
         self.log.debug("The current state of the farm is: %s", self.current_state)
 
+    def offset_time(self, offset_amount) -> bool:
+        """
+        This function updates the offset value of the farm by the specified amount. It returns a success/failure
+        boolean.
+        :param offset_amount: The amount to offset the farm.
+        :return: Success or failure as a boolean
+        """
+        new_offset = self.time_offset + float(offset_amount)
+
+        # Check for negative time
+        if new_offset + self.elapsed_time < 0:
+            return False
+        self.time_offset = new_offset
+        return True
+
     def change_pattern(self, new_pattern) -> bool:
         """
         This function changes the current pattern to the new pattern. If successful it returns true, otherwise false.
