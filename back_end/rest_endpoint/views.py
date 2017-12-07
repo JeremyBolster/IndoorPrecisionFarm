@@ -104,6 +104,7 @@ class RestEndpoint(object):
             'message': {
                 'desired_state': greenhouse.desired_state.to_json(),
                 'elapsed_time': int(greenhouse.elapsed_time),
+                'recipe_length': greenhouse.get_pattern_time_length(),
                 'start_time': int(greenhouse.start_time)
             },
             'success': True
@@ -142,7 +143,7 @@ class RestEndpoint(object):
         """
         _, _, timestamp = RestEndpoint._get_newest_image_name_and_filepath_and_timestamp()
         return json.dumps({
-            'image_url': '/api/vi/image/view',
+            'image_url': '/api/v1/image/view',
             'last_updated': timestamp,
             'success': True
         }), 200

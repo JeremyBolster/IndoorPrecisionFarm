@@ -1,50 +1,43 @@
 {% extends "greenhouse/base_html.html" %}
 {% load static %}
+{% load filters %}
 {% block body %}
-    <body class="fixed-nav sticky-footer bg-dark" id="page-top">
-    {% include "greenhouse/navbar.html" %}
-    <div class="content-wrapper">
-        <div class="container-fluid">
-            <div class="card-columns">
-                {% for farm in farms %}
-                    <div class="card mb-3">
-                    <div class="card-header">
-                        <i class="fa fa-table"></i> {{ farm.name }}
-                    </div>
-                    <!-- TODO this should just make the image fullscreen when tapped -->
-                    <a href="#">
-                        <img class="card-img-top img-fluid w-100" src="/media/plants{{ forloop.counter }}.jpg"
-                             alt="">
-                    </a>
-                    <div class="card-body">
-                        <!-- TODO something with this text? -->
-                        <!-- TODO this farm name should do something when clicked if it is clickable -->
-                        <h6 class="card-title mb-1"><a href="#">{{ farm.name }}</a></h6>
-                        <p class="card-text small">These plants are looking nice and healthy!
-                            <a href="#">#localGrow</a>
-                        </p>
-                    </div>
-                    <hr class="my-0">
-                    <div class="card-body py-2 small">
-                        <!-- TODO this progress bar should be dynamic -->
-                        <div class="progress">
-                            <div class="progress-bar bg-success" style="width:70%">70%</div>
-                        </div>
-                    </div>
-                    <hr class="my-0">
-                    <div class="card-footer small text-muted">
-                        {% if farm.climate.last_resolved < 100 %}
-                            Updated {{ farm.climate.last_resolved }} seconds ago
-                        {% else %}
-                            Updated {% widthratio farm.climate.last_resolved 60 1 %} minutes ago
-                        {% endif %}
-
-                    </div>
-                </div>
-                {% endfor %}
+  <body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  {% include "greenhouse/navbar.html" %}
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <div class="card-columns">
+        {% for farm in farms %}
+          <div class="card mb-3">
+            <div class="card-header">
+              <i class="fa fa-table"></i> {{ farm.name }}
             </div>
-        </div>
+            <a href="#">
+              <img class="card-img-top img-fluid w-100" src="/media/{{ farm.name|underscored }}-view.jpg"
+                   alt="">
+            </a>
+            <div class="card-body">
+              <h6 class="card-title mb-1"><a href="/details/?farm={{ farm.name }}">{{ farm.name }}</a></h6>
+              <p class="card-text small">These plants are looking nice and healthy!
+                <a href="#">#localGrow</a>
+              </p>
+            </div>
+            <hr class="my-0">
+            <div class="card-body py-2 small">
+              {% include "greenhouse/progress_bar.html" %}
+            </div>
+            <hr class="my-0">
+            <div class="card-footer small text-muted">
+              {% if farm.climate.last_resolved < 100 %}
+                Updated {{ farm.climate.last_resolved }} seconds ago
+              {% else %}
+                Updated {% widthratio farm.climate.last_resolved 60 1 %} minutes ago
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
     </div>
-    </div>
-    </body>
+  </div>
+  </body>
 {% endblock %}

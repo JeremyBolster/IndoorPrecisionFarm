@@ -96,7 +96,7 @@ class Greenhouse(object, metaclass=Singleton):
             pattern = self._get_current_params()
         except IndexError:
             # TODO this means the farm has finished processing the pattern
-            # Not sure what to do here
+            # TODO call a function to disable all devices on the farm -> set them to off state
             self.log.warning('The farm has finished executing the current pattern')
         self.log.debug("At time: %s , The current pattern is: %s",
                        time.time() - self.start_time + self.time_offset, pattern)
@@ -161,6 +161,13 @@ class Greenhouse(object, metaclass=Singleton):
             return False
         self.time_offset = new_offset
         return True
+
+    def get_pattern_time_length(self) -> int:
+        operations = self.pattern['operations']
+        total_time = 0
+        for stage in operations:
+            total_time += stage['cycles'] * (stage['day']['hours'] + stage['night']['hours']) * 3600
+        return total_time
 
     def change_pattern(self, new_pattern) -> bool:
         """

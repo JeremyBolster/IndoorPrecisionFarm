@@ -1,0 +1,101 @@
+{% extends "greenhouse/base_html.html" %}
+{% load static %}
+{% load filters %}
+{% block body %}
+  <body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  {% include "greenhouse/navbar.html" %}
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <div class="card w-100">
+        <div class="card-header">
+          <i class="fa fa-table"></i> {{ farm.name }}
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <p class="col-sm-3">current pattern file: \filename</p>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#climatePatternModal">
+              Change Climate Pattern
+            </button>
+            {% include "greenhouse/progress_bar.html" %}
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <p>
+                Pattern elapsed time: {{ farm.status.elapsed_time|seconds_to_time }}
+                <br>
+                Total Pattern time: {{ farm.status.recipe_length|seconds_to_time }}
+                <br>
+                Remaining Pattern time: {{ farm.status.recipe_length|sub:farm.status.elapsed_time|seconds_to_time }}
+              </p>
+            </div>
+            <div class="col col-md-auto">
+              <form action="#" method="post">
+                {% csrf_token %}
+                <div class="input-group">
+                  <input type="text" class="form-control" name="pattern_offset" placeholder="Number of Seconds">
+                  <input type="hidden" name="farm_url" value="{{ farm.url }}"/>
+                  <span class="input-group-btn">
+                    <button class="btn btn-secondary btn-success" type="submit">Offset Farm Completion</button>
+                  </span>
+                </div>
+              </form>
+            </div>
+          </div>
+          <hr>
+          {{ farm }}
+        </div>
+        <hr class="my-0">
+        <div class="card-footer small text-muted">
+          {% if farm.climate.last_resolved < 100 %}
+            Updated {{ farm.climate.last_resolved }} seconds ago
+          {% else %}
+            Updated {% widthratio farm.climate.last_resolved 60 1 %} minutes ago
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="climatePatternModal" tabindex="-1" role="dialog" aria-labelledby="climatePatternModal"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="climatePatternModalLabel">Climate Pattern Modifications</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="climatePatternDropdown"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Select New Climate Pattern
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {% for pattern in climate_patterns %}
+                <a class="dropdown-item" href="#" onclick="setClimate($(this));">{{ pattern }}</a>
+              {% endfor %}
+            </div>
+            Selecting a new climate pattern cancels the current pattern and starts the new one from the beginning.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary">Save changes</button>
+        </div>
+        <script>
+            setClimate = function (element) {
+                $("#climatePatternDropdown").html(element.text());
+            };
+            {#            submitOffset = function (element) {#}
+            {#                //TODO sumbit the offset to django for processing and to send to the proper backend#}
+            {#                alert(element.closest(".input-group").find(".form-control").val());#}
+            {#            }#}
+        </script>
+      </div>
+    </div>
+  </div>
+  </body>
+{% endblock %}
