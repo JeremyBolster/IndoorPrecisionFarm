@@ -6,6 +6,7 @@ from . import views
 
 urlpatterns = [
     url(r'^$', views.index, name='index'),
+    url(r'^favicon.ico/$', views.favicon),
     url(r'^details/$', views.settings),
     url(r'^.*/$', views.greenhouse)
 ]

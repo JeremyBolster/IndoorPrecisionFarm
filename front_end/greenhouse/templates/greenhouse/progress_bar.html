@@ -1,9 +1,7 @@
 {% load filters %}
-<div class="col-sm-6">
-  <div class="progress">
-    <div class="progress-bar bg-success"
-         style="width:{{ farm.status.elapsed_time|percent:farm.status.recipe_length }}%">
-      {{ farm.status.elapsed_time|percent:farm.status.recipe_length }}%
-    </div>
+<div class="progress">
+  <div class="progress-bar bg-success"
+       style="width:{{ farm.status.elapsed_time|percent:farm.status.recipe_length }}%">
+    {{ farm.status.elapsed_time|percent:farm.status.recipe_length }}%
   </div>
 </div>

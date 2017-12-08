@@ -12,11 +12,18 @@
         </div>
         <div class="card-body">
           <div class="row">
-            <p class="col-sm-3">current pattern file: \filename</p>
-            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#climatePatternModal">
-              Change Climate Pattern
-            </button>
-            {% include "greenhouse/progress_bar.html" %}
+            <div class="col">
+              <p>current pattern file: {{ farm.pattern.recipe_name }}</p>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#climatePatternModal">
+                Change Climate Pattern
+              </button>
+            </div>
+            <div class="col col-md-5">
+              {% include "greenhouse/progress_bar.html" %}
+              completion
+            </div>
           </div>
           <hr>
           <div class="row">
@@ -30,16 +37,15 @@
               </p>
             </div>
             <div class="col col-md-auto">
-              <form action="#" method="post">
-                {% csrf_token %}
-                <div class="input-group">
-                  <input type="text" class="form-control" name="pattern_offset" placeholder="Number of Seconds">
-                  <input type="hidden" name="farm_url" value="{{ farm.url }}"/>
-                  <span class="input-group-btn">
-                    <button class="btn btn-secondary btn-success" type="submit">Offset Farm Completion</button>
+              <div class="input-group">
+                <input type="text" class="form-control" name="pattern_offset" id="offset_box"
+                       placeholder="Number of Seconds">
+                <span class="input-group-btn">
+                    <button class="btn btn-secondary btn-success" onclick="submit();">
+                      Offset Farm Completion
+                    </button>
                   </span>
-                </div>
-              </form>
+              </div>
             </div>
           </div>
           <hr>
@@ -83,19 +89,51 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary" onclick="postPattern();" data-dismiss="modal">
+            Save changes
+          </button>
         </div>
-        <script>
-            setClimate = function (element) {
-                $("#climatePatternDropdown").html(element.text());
-            };
-            {#            submitOffset = function (element) {#}
-            {#                //TODO sumbit the offset to django for processing and to send to the proper backend#}
-            {#                alert(element.closest(".input-group").find(".form-control").val());#}
-            {#            }#}
-        </script>
       </div>
     </div>
   </div>
+  <script>
+      setClimate = function (element) {
+          $("#climatePatternDropdown").html(element.text());
+      };
+
+      var post_func = function (posting_data) {
+          $.ajax({
+              type: "POST",
+              url: "#",
+              data: posting_data,
+              success: function (data) {
+                  alert(data)
+              },
+              error: function (data) {
+                  alert(data)
+              }
+
+          });
+      };
+
+      postPattern = function () {
+          post_func({
+              'farm_url': "{{ farm.url }}",
+              'climate_pattern_name': $("#climatePatternDropdown").html(),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+          });
+          $("#climatePatternDropdown").html("Select New Climate Pattern");
+          return false;
+      };
+      
+      submit = function () {
+          post_func({
+              'farm_url': "{{ farm.url }}",
+              'pattern_offset': $("#offset_box").val(),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+          });
+          return false;
+      };
+  </script>
   </body>
 {% endblock %}

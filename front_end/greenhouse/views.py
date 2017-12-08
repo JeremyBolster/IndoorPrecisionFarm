@@ -1,7 +1,8 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from greenhouse.farm import query_farms
 from greenhouse.farm import get_list_of_patterns
-from greenhouse.farm import update_pattern_offset
+from greenhouse.farm import update_farm
 
 
 def index(request):
@@ -9,12 +10,23 @@ def index(request):
 
 
 def greenhouse(request):
-    return render(request, 'greenhouse/'+request.path, query_farms())
+    try:
+        return render(request, 'greenhouse/'+request.path, query_farms())
+    except:
+        return HttpResponse('Page not found', 404)
+
+
+def favicon(request):
+    with open('greenhouse/static/favicon.ico', "rb") as f:
+        return HttpResponse(f.read(), content_type="image/jpeg")
 
 
 def settings(request):
     if request.POST:
-        update_pattern_offset(request.POST['farm_url'], request.POST['pattern_offset'])
+        if update_farm(request.POST):
+            return HttpResponse('Changes Accepted', 200)
+        else:
+            return HttpResponse('Bad Data', 400)
     farm_name = request.GET.get('farm')
     specific_farm = None
     if farm_name:

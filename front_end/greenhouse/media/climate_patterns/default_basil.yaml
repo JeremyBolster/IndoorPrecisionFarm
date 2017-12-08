@@ -28,7 +28,7 @@ operations:
 - cycles: 2
   name: middle
   day:
-    hours: 10
+    hours: 0.01
     environment:
       waterTemp: 24
       lux: 1200

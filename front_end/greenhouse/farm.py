@@ -37,7 +37,8 @@ def query_farms() -> dict:
             dict(name=farm['name'],
                  url=url,
                  status=consume_status(url),
-                 climate=consume_climate(url))
+                 climate=consume_climate(url),
+                 pattern=consume_pattern(url))
         )
         consume_image(url, farm['name'])
 
@@ -58,6 +59,7 @@ def consume_image(url: str, farm_name: str) -> bool:
     """
     This method consumes an image from a farm.
     :param url: The base url of the farm to query.
+    :param farm_name: The name of the farm whos image is to be consumed
     :return: The name of the file which was saved to MEDIA_ROOT
     """
     # TODO this should check the last time an image was grabbed and only grab a new one if it was changed.
@@ -78,8 +80,17 @@ def consume_image(url: str, farm_name: str) -> bool:
     return True
 
 
+def consume_pattern(url: str) -> dict:
+    consumable = requests.get(url + '/api/v1/pattern/').json()
+    if check_success(consumable):
+        message = consumable['message']
+        return message
+    else:
+        raise AttributeError('Message was not received successfully')
+
+
 def consume_status(url: str) -> dict:
-    consumable = requests.get(url + '/api/v1/status').json()
+    consumable = requests.get(url + '/api/v1/status/').json()
     if check_success(consumable):
         message = consumable['message']
         return message
@@ -88,11 +99,9 @@ def consume_status(url: str) -> dict:
 
 
 def consume_climate(url: str) -> dict:
-    consumable = requests.get(url + '/api/v1/climate').json()
+    consumable = requests.get(url + '/api/v1/climate/').json()
     if check_success(consumable):
         message = consumable['message']
-        message['last_resolved'] = int(time.time() - message['current_time'])
-        # gives us the time difference between now and when the farm was last updated
         return message
     else:
         raise AttributeError('Message was not received successfully')
@@ -115,3 +124,32 @@ def get_list_of_patterns() -> List[str]:
 
 def update_pattern_offset(url_root, offset) -> bool:
     return requests.post(url=url_root + '/api/v1/status/', json={'time_offset': offset}).ok
+
+
+def change_climate_pattern(url_root:str, pattern_name: str) -> bool:
+    if '/' in pattern_name:
+        return False # Evil file name!!!
+    pattern_name_semi_clean = pattern_name.split('.')[0] + '.yaml'
+    # The above is a sad attempt to scrub the file name to prevent ../../../ shenanigans
+
+    pattern_path = path.join(settings.MEDIA_ROOT,
+                             'climate_patterns',
+                             pattern_name_semi_clean)
+    pattern = None
+    with open(pattern_path) as f:
+        pattern = yaml.safe_load(f.read())
+
+    if not pattern:
+        return False
+
+    return requests.post(url=url_root + '/api/v1/pattern/', json=pattern).ok
+
+
+def update_farm(request_query) -> bool:
+    farm_url = request_query['farm_url']
+    if 'pattern_offset' in request_query:
+        return update_pattern_offset(farm_url, request_query['pattern_offset'])
+    elif 'climate_pattern_name' in request_query:
+        return change_climate_pattern(farm_url, request_query['climate_pattern_name'])
+    else:
+        return False
