@@ -1,6 +1,7 @@
 from back_end.configuration import Config
 from back_end.databases.time_series_database_connection import TSDataBaseConnector
 from back_end.greenhouse.communication.communication import Communication
+from back_end.greenhouse.communication.camera_integration import Webcam
 from back_end.greenhouse.environment.environment import Environment
 from back_end.greenhouse.environment.environmental_control import EnvironmentalControl
 from threading import Thread
@@ -52,6 +53,7 @@ class Greenhouse(object, metaclass=Singleton):
         self.current_state: Environment = Environment()
         self.desired_state: Environment = Environment()
         self.remote_data_store: TSDataBaseConnector = remote_store
+        self.camera: Webcam = Webcam()
 
         climate_file_name = os.path.join(
             os.path.dirname(__file__),
@@ -89,6 +91,7 @@ class Greenhouse(object, metaclass=Singleton):
             self._get_sensor_data()
             self._update_desired_state()
             self.current_state.current_time = time.time()
+            self.camera.take_photo()
 
     def _update_desired_state(self):
         # TODO make this update the actual state of the greenhouse
