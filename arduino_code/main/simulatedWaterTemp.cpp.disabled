@@ -1,0 +1,8 @@
+#include "simulatedWaterTemp.h" 
+void setup_water_temperature() {
+}
+
+String get_water_temperature() {
+  /* This function can return NaN */
+  return "NaN";
+}

@@ -1,0 +1,9 @@
+// simulatedCO2.h
+#ifndef SIMCO2_H
+#define SIMCO2_H
+#include <Arduino.h>
+
+void setup_co2();
+String get_co2();
+
+#endif

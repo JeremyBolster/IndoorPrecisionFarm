@@ -1,0 +1,8 @@
+#include "simulatedHumidity.h" 
+void setup_humidity() {
+}
+
+String get_humidity() {
+  /* This function can return NaN */
+  return "NaN";
+}

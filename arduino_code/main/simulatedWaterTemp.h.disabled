@@ -1,0 +1,9 @@
+// simulatedWaterTemp.h
+#ifndef SIM_WATER_TEMP_H
+#define SIM_WATER_TEMP_H
+#include <Arduino.h>
+
+void setup_water_temperature();
+String get_water_temperature();
+
+#endif

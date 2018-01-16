@@ -1,0 +1,9 @@
+// simulatedAirTemp.h
+#ifndef SIM_AIR_TEMP_H
+#define SIM_AIR_TEMP_H
+#include <Arduino.h>
+
+void setup_air_temperature();
+String get_air_temperature();
+
+#endif
