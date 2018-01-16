@@ -1,0 +1,52 @@
+restEndpoint:
+  port: 8001
+  host: '0.0.0.0'
+postgres:
+  port: '5432'
+  db: 'greenhouse'
+  username: 'greenhouse'
+  password: 'greenhouse'
+  host: 'localhost'
+influxdb:
+  port: '8086'
+  db: 'greenhouse'
+  username: 'greenhouse'
+  password: 'greenhouse'
+  host: 'localhost'
+communication:
+  devicePins:
+    air_heater: 0
+    air_cooler: 1
+    water_heater: 2
+    water_cooler: 3
+    ph_up: 4
+    ph_down: 5
+    water_soil: 6
+    circulation_fan: 7
+    increase_c02: 8
+    lights: 9
+    humidifier: 10
+    dehumidifier: 11
+  arduinoCommands:
+    -
+      - sensorValue
+      - ss
+    -
+      - commandReceived
+      - s
+    -
+      - toggleDevice
+      - i?
+    -
+      - poll
+      - ""
+    -
+      - error
+      - s
+sensorList:
+  - "water_temp"
+  - "lux"
+  - "pH"
+  - "humidity"
+  - "air_temp"
+  - "co2"

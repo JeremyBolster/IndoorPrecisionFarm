@@ -1,2 +1,7 @@
+*.jpg
+mydb
 virt/
 *.pyc
+*.log
+.idea
+.DS_Store
