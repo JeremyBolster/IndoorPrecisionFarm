@@ -19,6 +19,7 @@ class RestEndpoint(object):
     def root():
         return json.dumps({
             'message': 'This is a UNBC precision farm.',
+            'endpoints': ['/api'],
             'success': True
         }), 200
 
@@ -62,20 +63,26 @@ class RestEndpoint(object):
         GET: This endpoint returns the current pattern executing on the farm
         POST: This endpoint allows for the current pattern to be replaced
         """
-        # TODO this
+        greenhouse = Greenhouse()
         if request.method == 'POST':
+            if greenhouse.change_pattern(request.json):
+                greenhouse.pattern = request.json
+                return json.dumps({
+                    'message': 'New Pattern Accepted',
+                    'success': True
+                }), 200
             return json.dumps({
-                'message': 'Not Implemented',
-                'success': True
-            }), 200
+                'message': 'Pattern format is incorrect',
+                'success': False
+            }), 400
         else:
             return json.dumps({
-                'message': 'Not Implemented',
+                'message': greenhouse.pattern,
                 'success': True
             }), 200
 
     @staticmethod
-    @app.route('/api/v1/status/', methods=['GET'])
+    @app.route('/api/v1/status/', methods=['GET', 'POST'])
     def api_v1_status():
         """
         This endpoint returns various reporting information. Examples of this are:
@@ -83,10 +90,22 @@ class RestEndpoint(object):
         :return:
         """
         greenhouse = Greenhouse()  # Greenhouse is a singleton
+        if request.method == 'POST':
+            if 'time_offset' in request.json and greenhouse.offset_time(request.json['time_offset']):
+                return json.dumps({
+                    'message': 'Offset updated by' + str(request.json['time_offset']),
+                    'success': True
+                }), 200
+            return json.dumps({
+                'message': 'The POSTed data is incorrect.',
+                'success': False
+            }), 400
         return json.dumps({
             'message': {
                 'desired_state': greenhouse.desired_state.to_json(),
-                'elapsed_time': int(greenhouse.elapsed_time)
+                'elapsed_time': int(greenhouse.elapsed_time),
+                'recipe_length': greenhouse.get_pattern_time_length(),
+                'start_time': int(greenhouse.start_time)
             },
             'success': True
         }), 200
@@ -124,7 +143,7 @@ class RestEndpoint(object):
         """
         _, _, timestamp = RestEndpoint._get_newest_image_name_and_filepath_and_timestamp()
         return json.dumps({
-            'image_url': '/api/vi/image/view',
+            'image_url': '/api/v1/image/view',
             'last_updated': timestamp,
             'success': True
         }), 200

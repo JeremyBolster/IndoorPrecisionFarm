@@ -35,12 +35,11 @@ def run(device, pattern):
     th = Thread(target=rest.app.run, args=[rest_config['host'], rest_config['port']])
     th.daemon = True
     th.start()
-    greenhouse = Greenhouse()
     if device in 'simulated':
         com_dev = ArduinoSimulated()
     else:
         com_dev = Arduino()
-    greenhouse.setup(com_dev, pattern)
+    greenhouse = Greenhouse(com_dev, pattern)
     greenhouse.run()
     while True:
         time.sleep(10)

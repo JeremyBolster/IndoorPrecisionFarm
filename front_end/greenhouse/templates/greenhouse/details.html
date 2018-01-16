@@ -1,0 +1,139 @@
+{% extends "greenhouse/base_html.html" %}
+{% load static %}
+{% load filters %}
+{% block body %}
+  <body class="fixed-nav sticky-footer bg-dark" id="page-top">
+  {% include "greenhouse/navbar.html" %}
+  <div class="content-wrapper">
+    <div class="container-fluid">
+      <div class="card w-100">
+        <div class="card-header">
+          <i class="fa fa-table"></i> {{ farm.name }}
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div class="col">
+              <p>current pattern file: {{ farm.pattern.recipe_name }}</p>
+            </div>
+            <div class="col">
+              <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#climatePatternModal">
+                Change Climate Pattern
+              </button>
+            </div>
+            <div class="col col-md-5">
+              {% include "greenhouse/progress_bar.html" %}
+              completion
+            </div>
+          </div>
+          <hr>
+          <div class="row">
+            <div class="col">
+              <p>
+                Pattern elapsed time: {{ farm.status.elapsed_time|seconds_to_time }}
+                <br>
+                Total Pattern time: {{ farm.status.recipe_length|seconds_to_time }}
+                <br>
+                Remaining Pattern time: {{ farm.status.recipe_length|sub:farm.status.elapsed_time|seconds_to_time }}
+              </p>
+            </div>
+            <div class="col col-md-auto">
+              <div class="input-group">
+                <input type="text" class="form-control" name="pattern_offset" id="offset_box"
+                       placeholder="Number of Seconds">
+                <span class="input-group-btn">
+                    <button class="btn btn-secondary btn-success" onclick="submit();">
+                      Offset Farm Completion
+                    </button>
+                  </span>
+              </div>
+            </div>
+          </div>
+          <hr>
+          {{ farm }}
+        </div>
+        <hr class="my-0">
+        <div class="card-footer small text-muted">
+          {% if farm.climate.last_resolved < 100 %}
+            Updated {{ farm.climate.last_resolved }} seconds ago
+          {% else %}
+            Updated {% widthratio farm.climate.last_resolved 60 1 %} minutes ago
+          {% endif %}
+
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="climatePatternModal" tabindex="-1" role="dialog" aria-labelledby="climatePatternModal"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="climatePatternModalLabel">Climate Pattern Modifications</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="dropdown">
+            <button class="btn btn-secondary dropdown-toggle" type="button" id="climatePatternDropdown"
+                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              Select New Climate Pattern
+            </button>
+            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+              {% for pattern in climate_patterns %}
+                <a class="dropdown-item" href="#" onclick="setClimate($(this));">{{ pattern }}</a>
+              {% endfor %}
+            </div>
+            Selecting a new climate pattern cancels the current pattern and starts the new one from the beginning.
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" onclick="postPattern();" data-dismiss="modal">
+            Save changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+      setClimate = function (element) {
+          $("#climatePatternDropdown").html(element.text());
+      };
+
+      var post_func = function (posting_data) {
+          $.ajax({
+              type: "POST",
+              url: "#",
+              data: posting_data,
+              success: function (data) {
+                  alert(data)
+              },
+              error: function (data) {
+                  alert(data)
+              }
+
+          });
+      };
+
+      postPattern = function () {
+          post_func({
+              'farm_url': "{{ farm.url }}",
+              'climate_pattern_name': $("#climatePatternDropdown").html(),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+          });
+          $("#climatePatternDropdown").html("Select New Climate Pattern");
+          return false;
+      };
+
+      submit = function () {
+          post_func({
+              'farm_url': "{{ farm.url }}",
+              'pattern_offset': $("#offset_box").val(),
+              'csrfmiddlewaretoken': '{{ csrf_token }}'
+          });
+          return false;
+      };
+  </script>
+  </body>
+{% endblock %}
