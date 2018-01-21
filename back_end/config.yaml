@@ -27,6 +27,9 @@ communication:
     lights: 9
     humidifier: 10
     dehumidifier: 11
+    co2_up: 12
+    co2_down: 13
+    external_air: 14
   arduinoCommands:
     -
       - sensorValue

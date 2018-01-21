@@ -60,9 +60,9 @@ class EnvironmentalControl(object):
         e_vals, f_vals = environment.values, self.farm_status.values
 
         self._generic_update(e_vals, f_vals, 'water_temp', 'water_heater', 'water_cooler')  # only works if hydroponic
-        self._generic_update(e_vals, f_vals, 'pH', 'pH_up', 'pH_down')  # Handles either soil or water ph
+        self._generic_update(e_vals, f_vals, 'pH', 'ph_up', 'ph_down')  # Handles either soil or water ph
         self._generic_update(e_vals, f_vals, 'air_temp', 'air_heater', 'air_cooler')
-        self._generic_update(e_vals, f_vals, 'co2', 'increase_c02', 'decrease_c02')
+        self._generic_update(e_vals, f_vals, 'co2', 'co2_up', 'co2_down')
         self._generic_update(e_vals, f_vals, 'humidity', 'humidifier', 'dehumidifier')
         self._generic_update(e_vals, f_vals, 'soil_moisture', 'water_soil', None)  # only works if soil based
 
