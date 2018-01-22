@@ -33,5 +33,5 @@ class Webcam(object):
             ))
         self.log.debug('Saving webcam photo to %s', file_save_path)
 
-        subprocess.run(['fswebcam', '-r', '640x480', '--jpeg', '85', '-D', '1', str(time.time())+'.jpg'],
-                       cwd=file_save_path)
+        subprocess.run(['fswebcam', '-r', '640x480', '--jpeg', '85', '-D', '1', str(int(time.time()))+'.jpg'],
+                       cwd=file_save_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)

@@ -112,7 +112,7 @@ class RestEndpoint(object):
         pass
 
     @staticmethod
-    def _get_newest_image_name_and_filepath_and_timestamp(media_dir: str = './media/webcam') -> Tuple[str, str, int]:
+    def _get_newest_image_name_and_filepath_and_timestamp(media_dir: str = './back_end/media/webcam') -> Tuple[str, str, int]:
         """
         This function searches the webcam media directory for the newest webcam snapshot. It naively assumes that the
         file name will be the timestamp of when it was taken in unix time. If the directory is empty it will raise a
