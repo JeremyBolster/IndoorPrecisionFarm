@@ -1,0 +1,8 @@
+#include "simulatedAirTemp.h"
+void setup_air_temperature() {
+}
+
+String get_air_temperature() {
+  /* This function can return NaN */
+  return "1";
+}

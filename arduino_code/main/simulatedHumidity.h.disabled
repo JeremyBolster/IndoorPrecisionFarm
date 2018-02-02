@@ -1,0 +1,9 @@
+// simulatedHumidity.h
+#ifndef SIM_HUM_H
+#define SIM_HUM_H
+#include <Arduino.h>
+
+void setup_humidity();
+String get_humidity();
+
+#endif

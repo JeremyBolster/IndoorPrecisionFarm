@@ -4,7 +4,7 @@ import time
 import os
 
 
-DEFAULT_SAVE_LOCATION = '/media/webcam/'
+DEFAULT_SAVE_LOCATION = 'media/webcam/'
 
 
 class Webcam(object):
@@ -26,12 +26,12 @@ class Webcam(object):
         :return: None
         """
         if not file_save_path:
-            file_save_path = os.path.join(
+            file_save_path = os.path.abspath(os.path.join(
                 os.path.abspath(__file__),
-                '../..',
+                '../../../',
                 DEFAULT_SAVE_LOCATION
-            )
-        self.log.debug('Saving webcam photo to ', file_save_path)
+            ))
+        self.log.debug('Saving webcam photo to %s', file_save_path)
 
-        subprocess.run(['fswebcam', '-r', '640x480', '--jpeg', '85', '-D', '1', str(time.time())+'.jpg'],
-                       cwd=file_save_path)
+        subprocess.run(['fswebcam', '-r', '640x480', '--jpeg', '85', '-D', '1', str(int(time.time()))+'.jpg'],
+                       cwd=file_save_path, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
