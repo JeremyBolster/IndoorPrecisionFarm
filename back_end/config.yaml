@@ -15,21 +15,22 @@ influxdb:
   host: 'localhost'
 communication:
   devicePins:
-    air_heater: 0
     air_cooler: 1
     water_heater: 2
     water_cooler: 3
     ph_up: 4
     ph_down: 5
     water_soil: 6
-    circulation_fan: 7
     increase_c02: 8
-    lights: 9
-    humidifier: 10
     dehumidifier: 11
     co2_up: 12
     co2_down: 13
-    external_air: 14
+    external_air: 24
+    circulation_fan: 22
+    lights: 24
+    humidifier: 26
+    air_heater: 28
+
   arduinoCommands:
     -
       - sensorValue
